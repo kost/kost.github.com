@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Android porting</title>
+
+		<meta name="description" content="Android porting">
+		<meta name="author" content="VK">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/diverto.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+                        <div class="slides">
+                                <section>
+                                        <img src="images/diverto-logo.png" border="0">
+                                        <h1>Porting to Android</h1>
+                                        <h3>Porting your favourite cmdline tool to Android</h3>
+                                        <h3></h3>
+                                        <p>
+                                                <small>Vlatko Kosturjak (@k0st), Droidcon Zagreb, 30th of April</small>
+                                        </p>
+                                </section>
+
+                                <section>
+                                        <h2>Agenda</h2>
+                                        <ul>
+                                                <li>Introduction</li>
+                                                <li>Native code</li>
+                                                <li>Toolchains</li>
+                                                <li>Things I wish I knew in advance</li>
+						<li>Calling native executables</li>
+						<li>Issues and implications</li>
+						<li>Summary</li>
+						<li>Questions and answers</li>
+                                        </ul>
+                                        <p align="right">45 minutes</p>
+                                        <aside class="notes">
+                                                This is what we will cover in this presentation.
+                                        </aside>
+                                </section>
+
+				<section>
+					<section>
+						<h2>About me</h2>
+						<ul>
+							<li>Security Consultant in Diverto</li>
+							<li>Linux and FLOSS enthusiast</li>
+							<li>Open source developer</li>
+							<ul>
+								<li>Have code in OpenVAS, Nmap, Metasploit, ...</li>
+								<li><a href="https://github.com/kost">https://github.com/kost</a></li>
+							</ul>
+							<li>Android "developer" since 2010</li>
+							<ul>
+								<li>started counting from first Market app</li>
+								<li>mostly focused on NDK and ADK</li>
+							</ul>
+						</ul>
+					</section>
+
+					<section>
+						<h2>About me in pictures</h2>
+						<!-- <div style="position: relative" > -->
+						   <img src="images/adk-workspace.jpg" /> <br />
+						   <!-- <img class="img-inline" style="position: absolute; top: 0; left: 0;" src="images/kindle-msf.jpg" /> -->
+						<!-- </div> -->
+						<aside class="notes">
+							Kindle, ADK, ...
+						</aside>
+					</section>
+
+					<section>
+						<h2>About me in pictures</h2>
+						<div style="position: relative" > 
+						   <img class="img-inline" src="images/nmap-kindle3.jpg" /> 
+						   <img class="img-inline" style="position: absolute; top: 0; left: 0;" src="images/kindle-msf.jpg" /> 
+						</div>
+						<aside class="notes">
+							Kindle, ADK, ...
+						</aside>
+					</section>
+
+					<section>
+						<h2>Introduce elephant</h2>
+						<ul>
+							<li>Talk will cover</li>
+							<ul>
+								<li>producing standalone binaries</li>
+								<li>executing standalone binaries</li>
+							</ul>
+							<li>Talk is mostly about Nmap experience</li>
+							<ul>
+								<li>Most Nmap frontends on playstore are using this port</li>
+								<ul>
+									<li>in source or binary form</li>
+									<li><a href="https://github.com/kost/nmap-android">https://github.com/kost/nmap-android</a></li>
+								</ul>
+								<li><a href="https://github.com/kost/NetworkMapper">https://github.com/kost/NetworkMapper</a></li>
+							</ul>
+							<li>Talk will NOT cover</li>
+							<ul>
+								<li>producing libraries or JNI</li>
+								<li>integrating with Android Studio</li>
+							</ul>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<h2>Native code</h2>
+					<ul>
+						<li>NOT your Java code :)</li>
+						<li>It's mostly about</li>
+						<ul>
+							<li>C/C++</li>
+							<li>Assembler</li>
+						</ul>
+						<li>Not portable across platforms</li>
+						<li>For each platform, you need different binary</li>
+						<ul>
+							<li>x86</li>
+							<li>arm</li>
+							<li>mips</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Why bother with native code?</h2>
+					<ul>
+						<li>performance</li>
+						<li>legacy code</li>
+						<li>code reuse</li>
+						<li>you just need that tool</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>What's the process?</h2>
+					<ul>
+						<li>compiling</li>
+						<ul>
+							<li>compiling on same machine</li>
+						</ul>
+						<li><b>cross-compiling</b></li>
+						<ul>
+							<li>compiling on (host) machine for other (target) machine</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Toolchains</h2>
+					<ul>
+						<li>Android NDK</li>
+						<li>Commercial</li>
+						<li>Open Source</li>
+						<li>Custom</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Custom toolchain</h2>
+					<ul>
+						<li>Your own version of compiler</li>
+						<li>Your own version of build scripts</li>
+						<li>Custom</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Commercial</h2>
+					<ul>
+						<li>Embarcadero</li>
+						<ul>
+							<li>Good old Borland...</li>
+						</ul>
+						<li>Xamarin</li>
+						<ul>
+							<li>Native apps in C#</li>
+						</ul>
+						<li>...</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Open Source / Free</h2>
+					<ul>
+						<li>Crystax</li>
+						<ul>
+							<li>drop-in replacement for Google's NDK</li>
+							<li>WCHAR, locales, full C+11 standard library... </li>
+						</ul>
+						<li>Buildroot</li>
+						<ul>
+							<li>Standard embedded cross compilation toolchain</li>
+							<li>ARM, x86, MIPS</li>
+						</ul>
+						<li>Scratchbox</li>
+						<ul>
+							<li>ARM, x86, MIPS (experimental)</li>
+							<li>Anyone remembers Maemo? :)</li>
+						</ul>
+						<li>...</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Android NDK</h2>
+					<ul>
+						<li>Android official toolchain</li>
+						<li>Available for free from developer.android.com</li>
+						<li>Bionic</li>
+						<ul>
+							<li>No full ANSI C support</li>
+							<li>locale</li>
+							<li>different threads</li>
+						</ul>
+						<li>Patch as you grow</li>
+						<ul>
+							<li>standalone binary support/bugs</li>
+							<li>stdout symbol bug</li>
+							<li>WCHAR support</li>
+							<li>standard library support</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>What's the fuzz?</h2>
+					<ul>
+						<li>Download NDK</li>
+						<li>Download tool you want to port</li>
+					</ul>
+						<pre><code data-trim contenteditable>	
+./configure --host=arm-linux-androideabi
+make
+make install
+						</code></pre>
+					<ul>
+						<li>It works - go home!</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>In case it is hello world...</h2>
+					<pre><code data-trim contenteditable>
+/* Hello World program */
+
+#include &lt;stdio.h&gt;
+
+void main()
+{
+    printf("Hello World");
+}
+					</code></pre>
+					<p>It works pretty well indeed.</p>
+				</section>
+
+				<section>
+					<h2>In real world</h2>
+					<ul>
+						<li>Code isn't perfect</li>
+						<li>Not portable</li>
+						<li>Endianess</li>
+						<li>Path Separators</li>
+						<li>Dependencies</li>
+						<li>Extensions</li>
+						<li>3rd party libraries</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Two ways to invoke compiler</h2>
+					<ul>
+						<li>Calling with sysroot</li>
+					</ul>
+					<pre><code data-trim contenteditable>
+export CC="$NDK/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86/bin/arm-linux-androideabi-gcc"
+export CFLAGS="--sysroot=$SYSROOT"
+$CC $CFLAGS -o hello hello.c
+					</code></pre>
+					<ul>
+						<li><b>Producing directory for target</b></li>
+					</ul>
+					<pre><code data-trim contenteditable>
+$NDK/build/tools/make-standalone-toolchain.sh --platform=android-3 --install-dir=/opt/ndk3
+/opt/ndk3/bin/arm-linux-androideabi-gcc -o hello hello.c
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>NDK platforms</h2>
+					<table>
+						<thead>
+							<tr>
+								<th>NDK platform</th>
+								<th>Platforms</th>
+								<th>32/64 bit</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>3</td>
+								<td>ARM</td>
+								<td>32</td>
+							<tr>
+							<tr>
+								<td>9</td>
+								<td>ARM/MIPS/Intel</td>
+								<td>32</td>
+							<tr>
+							<tr>
+								<td>21</td>
+								<td>ARM/MIPS/Intel</td>
+								<td>64</td>
+							<tr>
+						</tbody>
+					</table>
+				</section>
+
+				<section>
+					<h2>Process of cross compiling</h2>
+					<ul>
+						<li>Compile and fix as you go :)</li>
+						<ul>
+							<li>sorry, no single recipe</li>
+						</ul>
+						<li>Standard problems</li>
+						<ul>
+							<li>stdout bug</li>
+							<li>old autoconf/automake support files</li>
+							<li>arm-linux-androideabi missing</li>
+						</ul>
+						<li>In short</li>
+						<ul>
+							<li>nothing that google/stackoverflow can't help :)</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Static vs Dynamic linking</h2>
+					<ul>
+						<li>Dynamic</li>
+						<ul>
+							<li>small size</li>
+							<li>run-time dependency</li>
+						</ul>
+						<li>Static</li>
+						<ul>
+							<li>large size</li>
+							<li>no dependencies</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Life is perfect</h2>
+					<p>
+						Static binaries working like a charm
+					</p>
+					<blockquote>
+						&ldquo;until resolv.conf disappeared :)
+						&rdquo;
+					</blockquote>
+				</section>
+
+				<section>
+					<h2>DNS problems</h2>
+					<pre><code data-trim contenteditable>
+int main(int argc,char *argv[]) {
+        int i;
+        struct hostent *hp;
+
+        for ( i=1; i&lt;argc; ++i ) {
+                hp = gethostbyname(argv[i]);
+                if ( !hp ) {
+                   fprintf(stderr, "%s: host '%s'\n", hstrerror(h_errno),
+                        argv[i]);
+                   continue;
+                }
+                printf("Host:\t%s\n" ,argv[i]);
+                printf("\tResolves to:\t%s\n", hp-&gt;h_name);
+        }
+}
+					</code></pre>
+					<p>Original at <a href="https://gist.github.com">gist</a></p>
+				</section>
+
+				<section>
+					<h2>DNS and resolv.conf</h2>
+					<pre><code data-trim contenteditable>
+#ifdef ANDROID_CHANGES /* READ FROM SYSTEM PROPERTIES */
+        dns_last_change_counter = _get_dns_change_count();
+	[..]
+#else /* !ANDROID_CHANGES - IGNORE resolv.conf in Android */
+#define MATCH(line, name) \
+	[..]
+
+					</code></pre>
+					<p>Original at <a href="https://code.google.com/p/android-source-browsing/source/browse/libc/netbsd/resolv/res_init.c?repo=platform--bionic">https://code.google.com/p/android-source-browsing</a></p>
+				</section>
+
+				<section>
+					<h2>Dynamic vs Static</h2>
+					<table>
+						<thead>
+							<tr>
+								<th>Type</th>
+								<th>Size</th>
+								<th>Dependency</th>
+								<th>DNS OOTB</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Dynamic</td>
+								<td>smaller</td>
+								<td>yes</td>
+								<td>yes</td>
+							<tr>
+							<tr>
+								<td>Static</td>
+								<td>bigger</td>
+								<td>no</td>
+								<td>no</td>
+							<tr>
+							<tr>
+								<td>Mixed</td>
+								<td>medium</td>
+								<td>yes (basic)</td>
+								<td>yes</td>
+							<tr>
+						</tbody>
+					</table>
+				</section>
+
+				<section>
+					<h2>Here comes Lolipop </h2>
+					<pre><code data-trim contenteditable>
+error: only position independent executables (PIE) are supported.
+					</code></pre>
+					<ul>
+						<li>Position Independent Executable (PIE)</li>
+						<li>PIE support appeared in API level 16 </li>
+						<li>Finally they implemented it :)</li>
+						<ul>
+							<li>Too bad binaries does not work</li>
+						</ul>
+				</section>
+
+				<section>
+					<h2>What's PIE?</h2>
+					<ul>
+						<li>Position Independent Executable (PIE)</li>
+						<li>Security protection</li>
+						<ul>
+							<li>better Address Space Layout Randomization (ASLR)</li>
+							<li>Exploitation mitigation technique</li>
+							<li>Harder return-to-libc exploitation</li>
+						</ul>
+						<li>Requirements</li>
+						<ul>
+							<li>PIE required for dynamic executables</li>
+							<li>PIE not required for static executables</li>
+						</ul>
+				</section>
+
+				<section>
+					<h2>PIE example</h2>
+					<pre><code data-trim contenteditable>
+#include &lt;stdio.h&gt;
+
+int global;
+
+int checkadr (int *bla)
+{
+        int local;
+        printf("bla adr = %p\n", &bla);
+        printf("global adr = %p\n", &global);
+        printf("local adr = %p\n", &global);
+}
+
+int main (void) {
+        int c;
+        printf("c adr = %p\n", &c);
+        printf("checkadr adr = %p\n", &checkadr);
+        
+        checkadr(1);
+}
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>PIE support</h2>
+					<table>
+						<thead>
+							<tr>
+								<th>Android version</th>
+								<th>Supported</th>
+								<th>Required</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>1,2,3</td>
+								<td>no</td>
+								<td>no</td>
+							<tr>
+							<tr>
+								<td>4</td>
+								<td>yes</td>
+								<td>no</td>
+							<tr>
+							<tr>
+								<td>5</td>
+								<td>yes</td>
+								<td>yes</td>
+							<tr>
+						</tbody>
+					</table>
+				</section>
+
+				<section>
+					<h2>PIE workaround</h2>
+					<ul>
+						<li>Way to run PIE executables on non supported systems</li>
+						<li>if system suppports PIE</li>
+						<ul>
+							<li>just run executable</li>
+						</ul>
+						<li>if system does not suppport PIE</li>
+						<ul>
+							<li>use run_pie.c</li>
+							<li>run_pie your_proggy args</li>
+						</ul>
+					</ul>
+					<pre><code data-trim contenteditable>
+CFLAGS +=-fvisibility=default -fPIE
+LDFLAGS += -rdynamic -pie
+					</code></pre>
+					<p><a href=">https://gist.github.com/kost/5fd4628f45a4995bec28">https://gist.github.com/kost/5fd4628f45a4995bec28</a></p>
+				</section>
+
+				<section>
+					<h2>Calling native executables</h2>
+					<pre><code data-trim contenteditable>
+p = Runtime.getRuntime().exec(command);
+p.waitFor();
+BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+String line;
+while ((line = reader.readLine()) != null) {
+	output.append(line).append("\n");
+}
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Better way - using ProcessBuilder</h2>
+					<pre><code data-trim contenteditable>
+ProcessBuilder processBuilder = new ProcessBuilder(shellToRun);
+processBuilder.redirectErrorStream(true);
+scanProcess = processBuilder.start();
+outputStream = new DataOutputStream(scanProcess.getOutputStream());
+inputStream = new BufferedReader(new InputStreamReader(scanProcess.getInputStream()));
+while (((pstdout = inputStream.readLine()) != null)) {
+	output.append(pstdout).append("\n");
+}
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Running binaries as root</h2>
+					<ul>
+						<li>Not needed to set any new android permission</li>
+						<ul>
+							<li>Historic references to SUPERUSER permissions</li>
+						</ul>
+						<li>Not much different than executing as normal user</li>
+						<ul>
+							<li>Have to Runtime.getRuntime().exec("su")</li>
+							<li>Write commands to stdin of process</li>
+							<li>Loop the output</li>
+						</ul>
+				</section>
+
+				<section>
+					<h2>Root implications</h2>
+					<ul>
+						<li>Killing run away root processes</li>
+						<ul>
+							<li>Hard as it can be due to blocking nature</li>
+							<li>UI does not have root access</li>
+						</ul>
+						<li>Killing spawned root processes</li>
+						<ul>
+							<li>parse ps output</li>
+							<li>spawn su shell</li>
+							<li>kill process</li>
+						</ul>
+				</section>
+
+				<section>
+					<h2>Security implications</h2>
+					<ul>
+						<li>Native binary problems</li>
+						<ul>
+							<li>Memory corruption attacks (Buffer overflows, ...)</li>
+							<li>Format string problems...</li>
+							<li>...</li>
+						</ul>
+						<li>Permissions</li>
+						<li>Command injections</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Security implications - permissions</h2>
+					<ul>
+						<li>Setting insecure permissions to executables/libraries</li>
+						<ul>
+							<li>Very common when something does not work</li>
+							<li>Dangerous and heroic</li>
+							<li>Other apps can write to your bin or library</li>
+						</ul>
+						<li>Exploitation</li>
+						<ul>
+							<li>Find insecure .so library, inject your code</li>
+							<li>Find insecure binary, replace it with your version!</li>
+						</ul>
+					</ul>
+					<pre><code data-trim contenteditable>
+echo "#!/bin/sh" &gt; /data/data/com.heroic.app/bin/mybinary
+echo "echo '0wned!'" &gt;&gt; /data/data/com.heroic.app/bin/mybinary
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Security implications - untrusted input</h2>
+					<ul>
+						<li>Passing untrusted/unvalidated input to shell</li>
+						<li>Running native executables can lead to command injections</li>
+						<ul>
+							<li>Extremely dangerous if running as user</li>
+							<li>Extremely heroic and dangerous if running as root</li>
+						</ul>
+						<li>Pay special attention to exported activities</li>
+						<ul>
+							<li>other apps can call that intent</li>
+							<li>which means they can execute commands as your app!!</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Untrusted input example</h2>
+					<pre><code data-trim contenteditable>
+Bundle b = getIntent().getExtras();
+configFilePath = b.getString("path");
+[..]
+ShellExecuter exe = new ShellExecuter();
+return exe.Executer("cat " + configFilePath);
+					</code></pre>
+					<pre><code data-trim contenteditable>
+&lt;activity
+    android:name=".MyHeroicActivity"
+    ....
+    android:exported="true" /&gt;
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Untrusted input exploitation</h2>
+					<pre><code data-trim contenteditable>
+public void onBtnClick(View view) {
+        Intent intent = new Intent();
+        intent.setClassName("com.heroic.app", "com.heroic.app.MyHeroicActivity");
+        intent.putExtra("path", "/system/etc/hosts; echo 'Owned' &gt; /data/data/com.heroic.app/bin/binary");
+        startActivity(intent);
+}
+
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>On the end..</h2>
+					<ul><li>You get bad comments :)</li></ul>
+					<img src="images/nmapper-bad1.jpg"><br />
+					<img src="images/nmapper-bad2.jpg"><br />
+					<ul>
+					<li>Don't use ratings for bug reports ;)</li>
+					<li>Please submit VERBOSE bug reports to author directly</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Fortunately</h2>
+					<p>Fortunately, there are good comments ;)</P>
+					<p>Thanks on these</p>
+				</section>
+
+				<section>
+					<h2>Summary</h2>
+					<ul>
+						<li>Porting is quite possible</li>
+						<li>Not as easy as marketing says</li>
+						<ul>
+							<li>You can't configure; make; make install in most cases</li>
+							<li>Expect you'll have to patch if project is bigger</li>
+						</ul>
+						<li>Not that hard</li>
+						<ul>
+							<li>If you know requirements upfront</li>
+							<li>Have listened to this lecture carefully</li>
+						</ul>
+						<li>Be aware of security implications!</li>
+					</ul>
+				</section>
+
+
+		                 <section>
+                                        <h3>Thanks on listening</h3>
+                                        <h1>?</h1>
+                                        <h3>Any questions?</h3>
+                                </section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
