@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Common Oops in DevOps</title>
+
+		<meta name="description" content="Common Oops in DevOps">
+		<meta name="author" content="VK">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/diverto.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+                        <div class="slides">
+                                <section>
+                                        <img src="images/diverto-logo.png" border="0">
+                                        <h1>Common Oops in DevOps</h1>
+                                        <h3>DevOps missing security manual</h3>
+                                        <h3></h3>
+                                        <p>
+                                                <small>Vlatko Kosturjak (@k0st), FSEC, Varaždin, 15th of September</small>
+                                        </p>
+                                </section>
+
+                                <section>
+                                        <h2>Agenda</h2>
+                                        <ul>
+                                                <li>Introduction</li>
+						<li>Secure communication</li>
+                                                <li>Development</li>
+						<li>Deployment</li>
+						<li>Configuration</li>
+						<li>Passwords</li>
+						<li>Summary</li>
+						<li>Questions and answers</li>
+                                        </ul>
+                                        <p align="right">45 minutes</p>
+                                        <aside class="notes">
+                                                This is what we will cover in this presentation.
+                                        </aside>
+                                </section>
+
+				<section>
+					<section>
+						<h2>About me</h2>
+						<ul>
+							<li>Security Consultant in Diverto</li>
+							<li>Open source (security) developer</li>
+							<ul>
+								<li>Have code in OpenVAS, Nmap, Metasploit, ...</li>
+								<li><a href="https://github.com/kost">https://github.com/kost</a></li>
+							</ul>
+							<li>Securing DevOps</li>
+							<ul>
+								<li>Helping clients in DevOps security</li>
+								<li>Having fun finding problems</li>
+							</ul>
+						</ul>
+					</section>
+
+
+				</section>
+
+				<section>
+					<h2>Introduce elephant</h2>
+					<ul>
+						<li>Talk will cover</li>
+						<ul>
+							<li>Common mistakes</li>
+							<li>development</li>
+							<li>deployments</li>
+							<li>continuos integration</li>
+							<li>password and/or secret management</li>
+						</ul>
+						<li>Talk is NOT</li>
+						<ul>
+							<li>comprehensive security manual</li>
+							<li>applicable to any DevOps case, YMMV</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Secure Communication</h2>
+					<ul>
+						<li>Don't use plain e-mail for <b>sensitive</b> information exchange</li>
+						<li>Do use</li>
+						<ul>
+							<li>SMIME</li>
+							<li>PGP/GnuPG</li>
+						</ul>
+						<li>How about team collaboration tools?</li>
+						<li>Slack</li>
+						<ul>
+							<li>Your destiny is tied to their destiny :)</li>
+							<li><a href="https://nakedsecurity.sophos.com/2015/03/30/slack-gets-hacked-rolls-out-two-factor-authentication-after-user-database-breach/">Slack got hacked</a></li>
+							<li><a href="https://slack.com/security">https://slack.com/security</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Security requirements</h2>
+					<ul>
+						<li>Define your security requirements upfront</li>
+						<li>Ask yourself</li>
+						<ul>
+							<li>What do I want to achieve?</li>
+							<li>Be mindful - There's no 100% protection</li>
+						</ul>
+						<li>How contract should look like for security?</li>
+						<ul>
+							<li>OWASP Secure Software Contract Annex</li>
+							<li><a href="https://www.owasp.org/index.php/OWASP_Secure_Software_Contract_Annex">https://www.owasp.org/index.php/OWASP_Secure_Software_Contract_Annex</a></li>
+						</ul>
+						<li>How my security requirements should look like?</li>
+						<ul>
+							<li>OWASP Application Security Verification Standard (ASVS)</li>
+							<li><a href="https://www.owasp.org/index.php/Category:OWASP_Application_Security_Verification_Standard_Project">https://www.owasp.org/index.php/Category:OWASP_Application_Security_Verification_Standard_Project</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Git awareness</h2>
+					<ul>
+						<li>Commit author and e-mail can be impersonated</li>
+						<ul>
+							<li>You can change to be anyone</li>
+							<li>You still need credentials to push, but merge request is fun :)</li>
+							<li>git config --global user.name "HD Moore"</li>
+							<li>git config --global user.email hd_moore@rapid7.com</li>
+						</ul>
+						<li>Hooks</li>
+						<ul>
+							<li>do not blindly copy hooks from others :)</li>
+							<li>.git/hooks/post-checkout</li>
+							<li>.git/hooks/post-commit</li>
+						</ul>
+					</ul>
+				</section>
+
+
+				<section>
+					<h2>Github Advanced Search</h2>
+					<ul>
+						<li><a href="https://github.com/search?utf8=%E2%9C%93&q=extension%3Aphp+mysql_query+%24_GET&type=Code&ref=searchresults">extension:php mysql_query $_GET</a></li>
+						<li><a href="https://github.com/search?utf8=%E2%9C%93&q=extension%3Aphp+mysql_query+%24_POST&type=Repositories&ref=searchresults">extension:php mysql_query $_POST</a></li>
+						<li><a href="https://github.com/search?utf8=%E2%9C%93&q=extension%3Aphp+mysql_query+%24_COOKIE&type=Repositories&ref=searchresults">extension:php mysql_query $_COOKIE</a></li>
+						<li>References</li>
+						<ul>
+							<li><a href="https://github.com/search/advanced">https://github.com/search/advanced</a></li>
+							<li><a href="http://seclists.org/fulldisclosure/2013/Jun/15">http://seclists.org/fulldisclosure/2013/Jun/15</a></li>
+							<li><a href="http://blog.conviso.com.br/2013/06/github-hacking-for-fun-and-sensitive.html">http://blog.conviso.com.br/2013/06/github-hacking-for-fun-and-sensitive.html</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Github Data Scraping</h2>
+					<ul>
+						<li>Creating realworld wordlists from github hosted data</li>
+						<li>References</li>
+						<ul>
+							<li>All directories found inside of github projects</li>
+							<li>All files found inside of github projects</li>
+							<li>All usernames found from email addresses</li>
+							<li>Passwords found within github projects</li>
+							<li>static salts found within github projects</li>
+						</ul>
+						<li>References</li>
+						<ul>
+							<li><a href="https://github.com/wick2o/gitDigger">https://github.com/wick2o/gitDigger</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Issue Scraping</h2>
+					<ul>
+						<li>open source trackers hold potential 0-days</li>
+						<li>just need to find correct ones</li>
+						<li>security issues are reported and public</li>
+						<li>Simple Example</li>
+						<ul>
+							<li>scrape issues and find GDB dump where EIP is 0x41414141</li>
+						</ul>
+						<li>References</li>
+						<ul>
+							<li><a href="https://github.com/jfoote/vulture">https://github.com/jfoote/vulture</a></li>
+							<li>Analyzes open source bug trackers for interesting vulnerabilities</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Issue Scraping</h2>
+					<ul><img src="https://cloud.githubusercontent.com/assets/2072203/6023462/f51c9098-ab92-11e4-938f-d7962ded2769.png" />
+					</ul>
+				</section>
+
+				<section>
+					<h2>Issue Recommendations</h2>
+					<ul>
+						<li>Security issues should be private until fixed</li>
+						<li>Regular practice</a></li>
+						<ul>
+							<li>E-mail with details</li>
+							<li>security@my-email-domain.com</li>
+						</ul>
+						<li>References</li>
+						<ul>
+							<li><a href="https://www.eff.org/issues/coders/vulnerability-reporting-faq">https://www.eff.org/issues/coders/vulnerability-reporting-faq</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Internal or your own repo</h2>
+					<ul>
+						<li>Nasty RCEs</li>
+						<li>GitList</a></li>
+						<ul>
+							<li>up to 0.4.0</li>
+							<li><a href="http://hatriot.github.io/blog/2014/06/29/gitlist-rce/">http://hatriot.github.io/blog/2014/06/29/gitlist-rce/</a></li>
+						</ul>
+						<li>Gitlab</li>
+						<ul>
+							<li>5.2, 5.3, 5.4, 6.0, 6.1, 6.2</li>
+							<li><a href="https://about.gitlab.com/2013/11/04/gitlab-ce-6-2-and-5-4-security-release/">https://about.gitlab.com/2013/11/04/gitlab-ce-6-2-and-5-4-security-release/</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Middleware</h2>
+					<ul>
+						<li>Open application server consoles</a></li>
+						<ul>
+							<li>deploy own code</li>
+						</ul>
+						<li>Easy passwords on application server consoles</a></li>
+						<ul>
+							<li>tomcat/tomcat? :)</li>
+							<li>deploy own code</li>
+						</ul>
+						<li>It works for almost all consoles</a></li>
+						<ul>
+							<li>JBoss, Tomcat, Weblogic, Websphere, ...</li>
+						</ul>
+						<li>References</li>
+						<ul>
+							<li><a href="http://bit.ly/washack">http://bit.ly/washack</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Be careful how you deploy</h2>
+					<ul>
+						<li>Data files</li>
+						<ul>
+							<li>Insecure object references</li>
+						</ul>
+						<li>Backup files</li>
+						<ul>
+							<li>bak</li>
+							<li>filename~</li>
+						</ul>
+						
+						<li>DVCS files</li>
+						<ul>
+							<li>.git</li>
+							<li>.svn</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Google hacking anyone?</h2>
+					<ul>
+						<li><a href="https://www.google.hr/?q=intitle:%22index+of%22+.bak">intitle:"index of" .bak</a></li>
+						<li><a href="https://www.google.hr/?q=intitle:%22index+of%22+.sql">intitle:"index of" .sql</a></li>
+						<li><a href="https://www.google.hr/?q=intitle:%22index+of%22+id_rsa">intitle:"index of" id_rsa</a></li>
+						<li><a href="https://www.google.hr/?q=intitle:%22index+of%22+.git">intitle:"index of" .git</a></li>
+						<li><a href="https://www.google.hr/?q=intitle:%22index+of%22+.svn">intitle:"index of" .svn</a></li>
+					</ul>
+				</section>
+			
+
+				<section>
+					<h2>Source code ripping - easy</h2>
+					<ul>
+						<li>Easy if directory browsing enabled</li>
+					<pre><code data-trim contenteditable>
+mkdir git-test 
+cd git-test 
+wget --mirror --include-directories=/.git http://www.target.com/.git 
+cd www.target.com
+git reset --hard 
+					</code></pre>
+						<li><a href="http://www.skullsecurity.org/blog/2012/using-git-clone-to-get-pwn3d">http://www.skullsecurity.org/blog/2012/using-git-clone-to-get-pwn3d</a></li>
+						<li><a href="http://www.slideshare.net/kost/wonderful-world-of-distributed-scm-or-vcs">http://www.slideshare.net/kost/wonderful-world-of-distributed-scm-or-vcs</a></li>
+						<li><a href="https://k0st.wordpress.com/2012/10/23/rip-or-pillage-dvcs-story-about-git/">https://k0st.wordpress.com/2012/10/23/rip-or-pillage-dvcs-story-about-git/</a></li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>State of Source code ripping</h2>
+					<ul>
+						<li>When directory browsing is disabled</li>
+					</ul>
+					<table>
+						<thead>
+							<tr>
+								<th>DVCS</th>
+								<th>Info</th>
+								<th>Source</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>CVS</td>
+								<td>yes</td>
+								<td>no</td>
+							</tr>
+							<tr>
+								<td>SVN</td>
+								<td>yes</td>
+								<td>mostly</td>
+							</tr>
+							<tr>
+								<td>Git</td>
+								<td>yes</td>
+								<td>mostly</td>
+							</tr>
+							<tr>
+								<td>Mercurial (hg)</td>
+								<td>yes</td>
+								<td>yes</td>
+							</tr>
+							<tr>
+								<td>Bazaar (bzr)</td>
+								<td>yes</td>
+								<td>yes</td>
+							</tr>
+						</tbody>
+					</table>
+				</section>
+
+				<section>
+					<h2>Source Ripping tools</h2>
+					<ul>
+						<li>DVCS-Pillage</li>
+						<ul>
+							<li><a href="https://github.com/evilpacket/DVCS-Pillage">https://github.com/evilpacket/DVCS-Pillage</a></li>
+							<li>by Adam Baldwin</li>
+							<li>supports almost all DVCSs</li>
+						</ul>
+						<li>DVCS ripper</li>
+						<ul>
+							<li><a href="https://github.com/kost/dvcs-ripper">https://github.com/kost/dvcs-ripper</a></li>
+							<li>by me :)</li>
+							<li>supports almost all DVCSs</li>
+							<li>fast and most feature packed :)</li>
+							<li>able to cache HTTP requests in redis</li>
+							<li>packed refs support</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Source Code recommendations</h2>
+					<ul>
+						<li>Prevent Serving from web server</li>
+						<ul>
+							<pre><code data-trim contenteditable>
+&lt;DirectoryMatch .svn&gt;
+	Order allow,deny 
+	Deny from all
+&lt;/DirectoryMatch&gt;
+							</code></pre>
+						</ul>
+						<li>Periodic check</li>
+						<ul>
+							<li>find /web -name .svn</li>
+							<li>find /web -name .git</li>
+						</ul>
+						<li>Config files</li>
+						<ul>
+							<li>Config.php vs config.php-dist</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Vagrant</h2>
+					<ul>
+						<li>wrapper around VirtualBox, VMware and KVM</li>
+						<li>provision virtual machines quickly</li> 
+						<li>mostly used by developers</li> 
+						<ul>
+							<li>complete development environment</li>
+							<li>deterministic results</li>
+						</ul>
+						<li>References</li> 
+						<ul>
+							<li><a href="https://www.vagrantup.com/">https://www.vagrantup.com/</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Vagrant common problems</h2>
+					<ul>
+						<li>default credentials</li> 
+						<ul>
+							<li>root/vagrant</li>
+							<li>vagrant/vagrant</li>
+						</ul>
+						<li>default SSH keys</li> 
+						<ul>
+							<li>private SSH key</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Vagrant recommendations</h2>
+					<ul>
+						<li>Change default credentials</li> 
+						<ul>
+							<li>root/vagrant</li>
+							<li>vagrant/vagrant</li>
+						</ul>
+						<li>Change default SSH keys</li> 
+						<ul>
+							<li>private SSH key</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Docker</h2>
+					<ul>
+						<li>Stay tuned for next lecture</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Jenkins</h2>
+					<ul>
+						<li>No authentication</li>
+						<ul>
+							<li>easy to get remote code execution</li>
+							<li>exploit/multi/http/jenkins_script_console </li>
+						</ul>
+						<li>Local authentication</li>
+						<ul>
+							<li>register as new user</li>
+							<li>get access to script console</li>
+							<li>/view/All/newJob =&gt; new build =&gt; run</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Jenkins</h2>
+					<ul>
+						<li>Implement authentication</li>
+						<li>Rework ACLs</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Few other things</h2>
+					<ul>
+						<li>Elasticsearch</li>
+						<ul>
+							<li>RCE on below 1.2.0</li>
+						</ul>
+						<li>Redis</li>
+						<ul>
+							<li>no authentication</li>
+							<li>no encryption</li>
+						</ul>
+						<li>Cassandra</li>
+						<ul>
+							<li>my lecture on FSEC 2012</li>
+							<li><a href="https://nmap.org/nsedoc/lib/cassandra.html">https://nmap.org/nsedoc/lib/cassandra.html</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Password and secret management</h2>
+					<ul>
+						<li>Get rid of Passwords</li>
+						<ul>
+							<li><a href="https://www.yubico.com">Yubikey</a></li>
+							<li><a href="https://www.nitrokey.com/">Nitrokey</a></li>
+						</ul>
+						<li>Yes, it's hard to remove them all</li>
+						<ul>
+							<li>There are still passwords somewhere and API keys</li>
+							<li>Secret management solutions</li>
+						</ul>
+						<li>Config files</li>
+						<ul>
+							<li>Config.php vs config.php-dist</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Secret management solutions</h2>
+					<ul>
+						<li>Keywhiz</li>
+						<ul>
+							<li>Alpha development quality</li>
+							<li>using mTLS with a client certificate</li>
+							<li><a href="https://square.github.io/keywhiz/">https://square.github.io/keywhiz/</a></li>
+						</ul>
+						<li>Vault</li>
+						<ul>
+							<li>More complete tool to manage secrets</li>
+							<li><a href="https://www.vaultproject.io/">https://www.vaultproject.io/</a></li>
+							<li><a href="https://hashicorp.com/blog/vault.html">https://hashicorp.com/blog/vault.html</a></li>
+						</ul>
+						<li>Downsides</li>
+						<ul>
+							<li>If it gets owned, everything is compromised!</li>
+						</ul>
+					</ul>
+				</section>
+
+
+				<section>
+					<h2>Summary</h2>
+					<ul>
+						<li>History repeats itself</li>
+						<li>Common fails are not rocket science</li>
+						<ul>
+							<li>Nothing spectacular</li>
+							<li>Basic security things</li>
+						</ul>
+						<li>Automatization</li>
+						<ul>
+							<li>You can automate parts of DevOps Security</li>
+							<li>Still some manual parts</li>
+						</ul>
+					</ul>
+				</section>
+
+
+		                 <section>
+                                        <h3>Thanks on listening</h3>
+                                        <h1>?</h1>
+                                        <h3>Any questions?</h3>
+					<h3><a href="https://twitter.com/k0st">@k0st</a></h3>
+                                </section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+				slideNumber: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
