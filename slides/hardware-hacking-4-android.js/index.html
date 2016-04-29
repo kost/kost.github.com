@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Hacking Hardware to talk with Android</title>
+
+		<meta name="description" content="Hacking Hardware to talk with Android">
+		<meta name="author" content="VK">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/diverto.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+                        <div class="slides">
+                                <section>
+                                        <img src="images/diverto-logo.png" border="0">
+                                        <h2>Hacking Hardware to talk with Android</h2>
+                                        <h4>Can we make that toaster talk with Android?</h4>
+					<h4></h4>
+                                        <p>
+                                                <small>Vlatko Kosturjak (<a href="https://twitter.com/k0st">@k0st</a>) and Dobrica Pavlinusic (<a href="https://twitter.com/dpavlin">@dpavlin</a>)</small>
+						<small><a href="http://droidcon.hr/en/sessions/hacking-hardware-talk-android-0">Droidcon Zagreb, 28th of April, 2016</a></small>
+                                        </p>
+                                </section>
+
+                                <section>
+                                        <h2>Agenda</h2>
+                                        <ul>
+                                                <li>Introduction</li>
+                                                <li>Should I develop hardware at all?</li>
+                                                <li>Where to start?</li>
+                                                <li>Hardware communication</li>
+						<li>Accessory Development Kit (ADK)</li>
+						<li>Demos</li>
+						<li>Summary</li>
+						<li>Questions and answers</li>
+                                        </ul>
+                                        <p align="right">45 minutes</p>
+                                        <aside class="notes">
+                                                This is what we will cover in this presentation.
+                                        </aside>
+                                </section>
+
+				<section>
+					<section>
+						<h2>Kost: About me</h2>
+						<ul>
+							<li>Security Consultant in Diverto</li>
+							<li>Linux and FLOSS enthusiast</li>
+							<li>Open source developer</li>
+							<ul>
+								<li>Have code in OpenVAS, Nmap, Metasploit, ...</li>
+								<li><a href="https://github.com/kost">https://github.com/kost</a></li>
+							</ul>
+							<li>Android "developer" since 2010</li>
+							<ul>
+								<li>started counting from first Market app</li>
+								<li>mostly focused on NDK and ADK</li>
+							</ul>
+						</ul>
+					</section>
+
+					<section>
+						<h2>About us in pictures</h2>
+						<!-- <div style="position: relative" > -->
+						   <img src="images/adk-workspace.jpg" /> <br />
+						   <!-- <img class="img-inline" style="position: absolute; top: 0; left: 0;" src="images/kindle-msf.jpg" /> -->
+						<!-- </div> -->
+						<aside class="notes">
+							Kindle, ADK, ...
+						</aside>
+					</section>
+
+					<section>
+						<h2>About us in pictures</h2>
+						<div style="position: relative" > 
+						   <img class="img-inline" src="images/nmap-kindle3.jpg" /> 
+						   <img class="img-inline" style="position: absolute; top: 0; left: 0;" src="images/kindle-msf.jpg" /> 
+						</div>
+						<aside class="notes">
+							Kindle, ADK, ...
+						</aside>
+					</section>
+
+					<section>
+						<h2>Dobrica: about me</h2>
+						<ul>
+							<li>System administrator at Library (FFZG)</li>
+							<li>Free Software Biggot</li>
+							<li>Hacking Hardware</li>
+							<ul>
+								<li>http://blog.rot13.org/</li>
+								<li>http://www.rot13.org/~dpavlin/</li>
+							</ul>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+				<section>
+					<h2>Should I develop hardware at all?</h2>
+					<ul>
+						<li>It depends :)</li>
+						<li>Basic sensor data</li>
+						<ul>
+							<li>Ambient Temperature</li>
+							<li>Humidity</li>
+							<li>Accelerometers</li>
+						</ul>
+						<li>Other sensors / usage</li>
+						<ul>
+							<li>Wind speed</li>
+							<li>Pyro</li>
+							<li>SCADA</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Example: Sensors Web Logger</h2>
+					<ul>
+						<li>Simple Android App to log Sensors</li>
+						<li>Basically it performs following</li>
+						<ul>
+							<li>Get All available sensors</li>
+							<li>Send GET request to specified server</li>
+							<li>Do it every X minutes</li>
+						</ul>
+						<li>Links</li>
+						<ul>
+							<li><a href="https://play.google.com/store/apps/details?id=org.kost.android.sensorsweblogger&hl=hr">https://play.google.com/store/apps/details?id=org.kost.android.sensorsweblogger&hl=hr</a></li>
+							<li><a href="https://github.com/kost/SensorsWebLogger">https://github.com/kost/SensorsWebLogger</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Example: Sensors Web logger</h2>
+					<img src="images/sensors-web-logger.jpg" /> <br />
+				</section>
+				</section>
+
+				<section>
+					<h2>Where to start?</h2>
+					<ul>
+						<li>final goal</li>
+						<li>user experience</li>
+						<li>speed of communication</li>
+						<li>communication security</li>
+					</ul>
+				</section>
+
+				<section>
+				<section>
+					<h2>Basic hardware kit needed</h2>
+					<img src="images/ivoras-hardware.jpg" /> <br />
+				</section>
+
+				<section>
+					<h2>Links on AliExpress/Bangood</h2>
+					<ul>
+						<li>We're lazy - thanks <a href="https://twitter.com/ivoras">Ivan Voras</a></li>
+					   <ul>
+						<li>Soldering: http://goo.gl/ePG7Ni</li>
+						<li>Voltmeter: http://goo.gl/J57z7N</li>
+						<li>Osciloscope: http://goo.gl/HKuCbP</li>
+						<li>Logic probe: http://goo.gl/rbWxJS</li>
+						<li>Power source: http://goo.gl/76dPqO</li>
+						<li>Arduinos: http://goo.gl/63pTE2</li>
+					   </ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Useful hardware devices</h2>
+					<ul>
+					     <li>Beside that - we would recommend</li>
+					     <ul>
+						<li>BusPirate</li>
+						<li>TTL serial cable</li>
+ 					     </ul>
+					     <li>Actually you don't need TTL </li>
+					     <ul>
+						<li>if you have BusPirate</li>
+					     </ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Bus Pirate</h2>
+					<img src="images/hw-buspirate.jpg" /> <br />
+				</section>
+
+				<section>
+					<h2>Logic Analyzer</h2>
+					<img src="images/hw-logic.jpg" /> <br />
+				</section>
+
+				</section>
+
+
+				<section>
+					<h2>Communication</h2>
+					<ul>
+						<li>Wireless</li>
+						<li>Bluetooth</li>
+						<li>NFC</li>
+						<li>USB</li>
+						<li>Serial</li>
+						<li>...</li>
+					</ul>
+				</section>
+
+				<section>
+				<section>
+					<h2>Wireless</h2>
+					<ul>
+						<li>Frequency</li>
+						<ul>
+						   <li>2.4 Ghz</li>
+						   <li>5 Ghz</li>
+						</ul>
+						<li>Standard wireless thing</li>
+						<ul>
+						   <li>Access Point</li>
+						   <li>STA / clients</li>
+						   <li>ad hoc*</li>
+						   <li>mesh*</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Useful wireless tools for reversing</h2>
+					<ul>
+					     <li>Obtaining</li>
+					     <ul>
+						<li>Kismet</li>
+						<li>Aircrack-ng suite</li>
+						<li>tcpdump on device</li>
+					     </ul>
+					     <li>Analysing</li>
+					     <ul>
+						<li>wireshark</li>
+						<li>tshark</li>
+						<li>moloch (heavy duty!)</li>
+						<li>pcap bindings for your favourite language</li>
+						<li>good hex editor and calculator</li>
+					     </ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Daugther was crazy about RC cars</h2>
+					<img src="images/hw-spyghost.jpg" /> <br />
+				</section>
+
+				<section>
+					<h2>She lost interest, daddy got it</h2>
+					<img src="images/hw-sp-inside-1.jpg" /> <br />
+				</section>
+
+				<section>
+					<h2>It's daddy toy</h2>
+					<img src="images/hw-sp-inside-2.jpg" /> <br />
+				</section>
+
+				<section>
+					<h2>Basic protocol analysis</h2>
+					<img src="images/wireshark.jpg" /> <br />
+				</section>
+
+				<section>
+					<h2>Few quick tips</h2>
+					<ul>
+						<li>GUI is useful for quick analysis</li>
+						<li>text is good for finding patterns</li>
+					</ul>
+						<pre><code data-trim contenteditable>	
+char peer0_0[] = {
+0xa1, 0x7b, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7b, 
+0xff, 0xa1, 0x7b, 0x00, 0x00, 0x00, 0x00, 0x00, 
+0x7b, 0xff };
+						</code></pre>
+						<pre><code data-trim contenteditable>	
+tshark -r pcap1.pcap -T fields -e data 
+						</code></pre>
+
+					<ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Wireless protocol reversing example</h2>
+					<ul>
+
+<pre><code data-trim contenteditable>	
+tshark -r pcap1.pcap -T fields -e data | grep a17 | less
+</code></pre>
+
+<pre><code data-trim contenteditable>	
+a17b8e0000000009ff
+a17b8e0000000009ff
+a17b8e0000000009ff
+a17b00000000007bff
+a17b00000000007bff
+a17b00000000007bff
+</code></pre>
+
+					</ul>
+
+				</section>
+				<section>
+					<h2>Demo time!</h2>
+					<p>Let's pray to the demo gods</P>
+				</section>
+
+				<section>
+					<h2>Interesting part</h2>
+					<p>She wants it back now :)</P>
+				</section>
+
+				</section>
+
+				<section>
+				<section>
+					<h2>Bluetooth</h2>
+					<ul>
+						<li>2.4 Ghz</li>
+						<li>Modes</li>
+						<ul>
+							<li>Server</li>
+							<li>Client</li>
+						</ul>
+						<li>References</li>
+						<ul>
+							<li>https://developer.android.com/guide/topics/connectivity/bluetooth.html</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Bluetooth Analysis</h2>
+					<ul>
+						<li>It is possible with plugin</li>
+						<li>Dump and analysis</li>
+						<ul>
+							<li>bluez tools</li>
+							<li>ubertooth one</li>
+							<li>spectrum analyzer (very low level)</li>
+							<li>gnu radio and sdr (very low level)</li>
+						</ul>
+						<li>References</li>
+						<ul>
+							<li>http://ubertooth.sourceforge.net/</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Bluetooth and PhoneGap</h2>
+					<ul>
+						<li>It is possible with plugin</li>
+						<li>Modes</li>
+						<ul>
+							<li>Server</li>
+							<li>Client</li>
+						</ul>
+						<li>References</li>
+						<ul>
+							<li>https://github.com/don/BluetoothSerial</li>
+						</ul>
+					</ul>
+				</section>
+
+				</section>
+
+				<section>
+				<section>
+					<h2>NFC</h2>
+					<ul>
+						<li>13.56 Mhz</li>
+						<li>Near Field Communication</li>
+						<li>Mifare not supported on newer Androids</li>
+						<ul>
+							<li>If it is Mifare Classic - you're lucky! ;)</li>
+							<li>reversing/analysing/cracking easy</li>
+							<li>except it does not work on Android very well</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>You tag might not be NFC</h2>
+					<ul>
+						<li>135 khz</li>
+						<li>Alternative frequency and protocol</li>
+						<li>Usually doors and access control systems</li>
+						<ul>
+							<li>Just ID</li>
+							<li>No encryption</li>
+							<li>IT does NOT work on Android very well</li>
+						</ul>
+					</ul>
+				</section>
+				</section>
+
+				<section>
+					<h2>USB</h2>
+					<ul>
+						<li>own device driver</li>
+						<li>serial device</li>
+						<li>HID device</li>
+						<li>storage device</li>
+						<li>ADB device</li>
+					</ul>
+				</section>
+
+				<section>
+				<section>
+					<h2>Debugging</h2>
+					<ul>
+						<li>ADB over TCP/IP</li>
+						<li>second USB port</li>
+						<li>USB hub</li>
+						<li>Toast Messages</li>
+						<li>printk()</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>ADB over TCP/IP</h2>
+					<ul>
+						<li>TCP port 5555</li>
+						<li>adb example </li>
+						<li>Security implications</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>ADB over TCP</h2>
+					<ul>
+						<li>Usually hidden from Setting UI</li>
+						<li>Usually does not need root</li>
+					</ul>
+						<pre><code data-trim contenteditable>
+su
+setprop service.adb.tcp.port 5555
+stop adbd
+start adbd
+						</code></pre>
+					<pre><code data-trim contenteditable>
+adb tcpip 5555
+adb connect 192.168.0.101:5555
+					</code></pre>
+					<ul>
+						<li>Last one - if you have ADB USB already</li>
+					</ul>
+				</section>
+
+				</section>
+
+				<section>
+					<h2>Own device driver</h2>
+					<ul>
+						<li>Hardware dependant</li>
+						<ul>
+							<li>kernel compatibility</li>
+							<li>binary compatibility</li>
+						</ul>
+						<li>Specific cases</li>
+						<ul>
+							<li>Speed</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+				<section>
+					<h2>Accessory Development Kit</h2>
+					<ul>
+						<li>Officialy supported</li>
+						<ul>
+							<li>Bluetooth</li>
+							<li>USB</li>
+						</ul>
+						<li>Protocol</li>
+						<ul>
+							<li>Android Open Acessory(AOA) protocol.</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Simple ADK demo board</h2>
+					<img src="images/hw-demoadk.jpg" /> <br />
+				</section>
+
+				</section>
+
+
+				<section>
+				<section>
+					<h2>Serial</h2>
+					<ul>
+						<li>Root is not needed</li>
+						<li>Integrated in Android API </li>
+						<li>Good frameworks on top of API</li>
+						<li>Android 3.1+</li>
+						<li>References</li>
+						<ul>
+							<li>https://developer.android.com/guide/topics/connectivity/usb/index.html</li>
+							<li>https://stackoverflow.com/questions/21800932/comunicating-with-serial-usb-device-over-android</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Android Serial Driver Library</h2>
+					<ul>
+						<li>driver library for communication with USB serial hardware</li>
+						<li>Using host API (Android 3.1+)</li>
+						<li>USB host serial driver library for CDC, FTDI, Arduino and other devices</li>
+						<li>References</li>
+						<ul>
+							<li>https://github.com/mik3y/usb-serial-for-android/</li>
+							<li>https://stackoverflow.com/questions/21800932/comunicating-with-serial-usb-device-over-android</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Simple serial example</h2>
+						<pre><code data-trim contenteditable>	
+sbSerialPort port = driver.getPort(0);
+port.open(connection);
+try {
+  port.setBaudRate(115200);
+  byte buffer[] = new byte[16];
+  int numBytesRead = port.read(buffer, 1000);
+  Log.d(TAG, "Read " + numBytesRead + " bytes.");
+} catch (IOException e) {
+} finally {
+  port.close();
+}
+						</code></pre>
+				</section>
+
+				<section>
+					<h2>PhoneGap/Cordova</h2>
+					<ul>
+						<li>It is possible to talk serial</li>
+						<li>Works only on android</li>
+						<li>References</li>
+						<ul>
+							<li>https://github.com/xseignard/cordovarduino</li>
+							<li>http://dynamicremo.blogspot.hr/2015/07/simple-serial-communication-app-using.html</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Simple example</h2>
+					<ul>
+						<li>Install cordova</li>
+						<li>Install platform and plugin</li>
+					</ul>
+						<pre><code data-trim contenteditable>	
+cordova platform add android
+cordova plugin add https://github.com/xseignard/cordovarduino.git
+cordova run android --device
+						</code></pre>
+					<ul>
+						<li>Start communicating with serial port</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Sample code</h2>
+					<pre><code data-trim contenteditable>
+$(document).ready(function(){
+ $("#connect_button").click(function(){
+  serial.requestPermission(
+   function success(){
+    // BaudRate for many Chips: 115200, Sometimes arduino: 9600 
+    var opts = {"baudRate":115200, "dataBits":8, "stopBits":1, "parity":0, "dtr":false}
+    serial.open(opts, 
+     function success(){
+      alert("Success");
+     }, function error(evt){
+      alert("Error");
+     }
+    );
+   },
+   function error(evt){
+    alert("Error");
+   }
+  );
+ });
+});
+
+					</code></pre>
+				</section>
+
+				</section>
+
+				<section>
+				<section>
+					<h2>Multimeter</h2>
+					<img src="images/hw-multimeter.jpg" /> <br />
+				</section>
+
+				<section>
+					<h2>Multimeter communication analysis</h2>
+					<ul>
+						<li>Multimeter have serial communication</li>
+						<li>Basic serial communication reversing</li>
+						<ul>
+							<li>Looking at the product specification</li>
+							<li>Looking at the similar products specs</li>
+							<li>If not, basic baud rate "brute" guessing</li>
+							<li>as well as other parameters (stop bit, etc)</li>
+						</ul>
+						<li>Getting as much communication as possible</li>
+						<ul>
+							<li>how it looks like in different states</li>
+							<li>find patterns and differences</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Multimeter communication</h2>
+					<ul>
+						<li>Only receive serial communication</li>
+						<li>Serial communication</li>
+						<ul>
+							<li>2400 bps</li>
+							<li>8 bits</li>
+							<li>1 stop bit</li>
+							<li>No Parity</li>
+						</ul>
+						<li>Packet pattern</li>
+						<ul>
+							<li>14 byte packets with 0D0A on the end</li>
+							<li>First few bytes - the value, other bit flags</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Multimeter Android App</h2>
+					<ul>
+						<li>What if I can get readings on Android</li>
+						<li>Features</li>
+						<ul>
+							<li>get nice graph (1 channel logic analyzer)</li>
+							<li>export values to CSV</li>
+							<li>take picture with camera on spike (with OSD)</li>
+						</ul>
+						<li>Proof of concept</li>
+						<ul>
+							<li>Android App using mik3y serial library</li>
+							<li>Drawing graphs using Android Plot</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Demo time!</h2>
+					<p>Let's pray to the demo gods</P>
+				</section>
+
+				<section>
+					<h2>Multimeter App PoC</h2>
+					<img src="images/droidmeter.jpg" /> <br />
+				</section>
+
+				</section>
+
+				<section>
+					<h2>Summary</h2>
+					<ul>
+						<li>Do you just need specific sensors?</li>
+						<li>Reusing components</li>
+						<ul>
+							<li>Find device with similar functionality</li>
+							<li>Add missing functionality</li>
+						</ul>
+						<li>USB</li>
+						<ul>
+							<li>prefer standard communication like serial</li>
+							<li>ADB over TCP/IP</li>
+						</ul>
+						<li>Have fun!</li>
+					</ul>
+				</section>
+
+
+		                 <section>
+                                        <h3>Thanks on listening</h3>
+                                        <h1>?</h1>
+                                        <h3>Any questions?</h3>
+                                </section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
