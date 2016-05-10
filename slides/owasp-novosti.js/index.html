@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<img src="images/owasp_logo.png" style="background:none; border:none; box-shadow:none;">
+					<h2>OWASP novosti</h2>
+					<h4>Često ponavljanja pitanja - odakle početi?</h4>
+					<h4></h4>
+					<p>
+						<small>Vlatko Kosturjak (<a href="https://twitter.com/k0st">@k0st</a>)</small>
+						<small><a href="https://www.owasp.org/index.php/Croatia">OWASP Croatia meetup, 11th of May, 2016</a></small>
+					</p>
+				</section>
+
+				<section>
+					<h2>Agenda</h2>
+					<ul>
+						<li>Uvod</li>
+						<li>OWASP</li>
+						<li>OWASP Hrvatska</li>
+						<li>OWASP Projekti</li>
+						<li>OWASP Novosti</li>
+						<li>Sažetak</li>
+						<li>Pitanja i odgovori</li>
+					</ul>
+					<p align="right">30 minuta</p>
+					<aside class="notes">
+						This is what we will cover in this presentation.
+					</aside>
+				</section>
+
+				<section>
+					<h2>Talk topic</h2>
+					<ul>
+						<li>First item</li>
+						<li>Second item</li>
+						<ul>
+							<li>Second item explained</li>
+							<li>Second item more explained</li>
+						</ul>
+						<li>Third item</li>
+						<ul>
+							<li>Third item explained</li>
+							<li>Third item more explained</li>
+						</ul>
+						<li>Fourth item</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Kako pratiti što ima novoga?</h2>
+					<ul>
+						<li>Web stranica</li>
+						<ul>
+							<li><a href="https://www.owasp.org/index.php/Croatia">OWASP Croatia</a></li>
+						</ul>
+						<li>Mailing lista</li>
+						<ul>
+							<li><a href="https://lists.owasp.org/mailman/listinfo/owasp-Croatia">owasp-Croatia</a></li>
+						</ul>
+						<li>Twitter</li>
+						<ul>
+							<li><a href="https://twitter.com/CroatiaOWASP">@CroatiaOWASP</a></li>
+						</ul>
+						<li>reddit</li>
+						<ul>
+							<li><a href="https://www.reddit.com/r/sigurnost">/r/sigurnost</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+				       <h3>Thanks on listening</h3>
+				       <h1>?</h1>
+				       <h3>Any questions?</h3>
+			       </section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
