@@ -227,6 +227,7 @@
 							<li>Physical security</li>
 							<li>Hardware</li>
 							<li>Host Operating system (drivers included)</li>
+							<li>Programming languages used (Go mostly)</li>
 							<li>Docker itself &amp; components</li>
 							<li>Images and containers</li>
 							<li>Application itself &amp; components</li>
@@ -270,17 +271,18 @@ FROM debian:latest
 RUN wget http://some.really.cool.app/install.sh -O - | sh
 						</code></pre>
 						</ul>
-						<li>Try to use https instead</li>
+						<li>at least try to use https instead</li>
 						<ul>
 						<pre><code data-trim contenteditable>	
 FROM debian:latest
 RUN wget https://some.really.cool.app/install.sh -O - | sh
 						</code></pre>
 						</ul>
+						<li><a href="https://www.idontplaydarts.com/2016/04/detecting-curl-pipe-bash-server-side/">Curl Pipe Delay PoC</a></li>
 					</ul>
 				</section>
 
-				<section
+				<section>
 					<h2>Docker building abuse</h2>
 					<img src="images/docker-building-limits.png">
 					<ul>
@@ -343,18 +345,42 @@ RUN nmap -sT -V -O -p- victim.com
 				<section>
 					<h2>Docker user namespaces</h2>
 					<ul>
-						<li>own user namespace missing</li>
+						<li>own user namespace missing in older versions</li>
 						<ul>
 							<li>UID 31337 in container = UID 31337 on host</li>
 							<li>UID 0 in container = UID 0 on host</li>
-							<li>to be implemented in 1.9!?</li>
 						</ul>
+						<li>implemented in Docker 1.10!</li>
 						<li><a href="https://s3hh.wordpress.com/2013/07/19/creating-and-using-containers-without-privilege/">https://s3hh.wordpress.com/2013/07/19/creating-and-using-containers-without-privilege/</a></li>
 						<li>References</li>
 						<ul>
+							<li><a href="https://blog.docker.com/2016/02/docker-engine-1-10-security/">https://blog.docker.com/2016/02/docker-engine-1-10-security/</a></li>
 							<li><a href="https://github.com/docker/docker/issues/7906">https://github.com/docker/docker/issues/7906</a></li>
 							<li><a href="https://github.com/docker/docker/pull/12648">https://github.com/docker/docker/pull/12648</a></li>
 							<li><a href="https://github.com/docker/docker/issues/15187">https://github.com/docker/docker/issues/15187</a></li>
+						</ul>	
+					</ul>
+				</section>
+
+				<section>
+					<h2>Docker Seccomp profiles</h2>
+					<ul>
+						<li>syscall filtering in Docker 1.10!</li>
+						<ul>
+							<li>allow</li>
+							<li>deny</li>
+							<li>trap</li>
+							<li>kill</li>
+							<li>trace</li>
+						</ul>
+						<li>Define syscalls in JSON</li>
+						<ul>
+							<li>--security-opt seccomp:myrules.json</li>
+							<li>--security-opt seccomp:unconfined</li>
+						</ul>
+						<li>References</li>
+						<ul>
+							<li><a href="https://blog.docker.com/2016/02/docker-engine-1-10-security/">https://blog.docker.com/2016/02/docker-engine-1-10-security/</a></li>
 						</ul>	
 					</ul>
 				</section>
@@ -448,7 +474,11 @@ Server:
 						<li>General</li>
 						<ul>
 							<li>same security profile/level on same docker host</li>
-							<li>take a look at CIS Docker benchmarks</li>
+							<li>take a look at <a href="https://benchmarks.cisecurity.org/tools2/docker/CIS_Docker_1.6_Benchmark_v1.0.0.pdf">CIS Docker benchmarks</a></li>
+							<ul>
+								<li>CIS benchmarks stack up</li>
+								<li>Take Debian CIS benchmarks if using Debian Host</li>
+							</ul>
 							<li>define limits</li>
 						</ul>
 						<li>Networking</li>
