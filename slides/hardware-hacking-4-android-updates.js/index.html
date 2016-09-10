@@ -315,6 +315,38 @@
 				</section>
 
 				<section>
+					<h2>Wireless protocol reversing example</h2>
+					<ul>
+
+<pre><code data-trim contenteditable>
+# nmap -sT -T2 -F -v -n 192.168.16.188
+
+Starting Nmap 7.01 ( https://nmap.org ) at 2016-09-10 14:47 CEST
+Initiating ARP Ping Scan at 14:47
+Scanning 192.168.16.188 [1 port]
+Completed ARP Ping Scan at 14:47, 0.41s elapsed (1 total hosts)
+Initiating Connect Scan at 14:47
+Scanning 192.168.16.188 [100 ports]
+Completed Connect Scan at 14:48, 40.03s elapsed (100 total ports)
+Nmap scan report for 192.168.16.188
+Host is up (0.0023s latency).
+Not shown: 97 closed ports
+PORT     STATE SERVICE
+23/tcp   open  telnet
+2001/tcp open  dc
+8080/tcp open  http-proxy
+MAC Address: 04:0C:00:00:88:13 (Unknown)
+
+Read data files from: /usr/bin/../share/nmap
+Nmap done: 1 IP address (1 host up) scanned in 40.53 seconds
+           Raw packets sent: 1 (28B) | Rcvd: 1 (28B)
+</code></pre>
+
+					</ul>
+
+				</section>
+
+				<section>
 					<h2>Basic protocol analysis</h2>
 					<img src="images/wireshark.jpg" /> <br />
 				</section>
