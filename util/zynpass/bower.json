@@ -1,0 +1,20 @@
+{
+  "name": "zynpass-js-web",
+  "authors": [
+    "Vlatko Kosturjak <vlatko.kosturjak@gmail.com>"
+  ],
+  "description": "Simple Zynpass generator",
+  "main": "all.js",
+  "license": "MIT",
+  "homepage": "https://github.com/kost/",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.1.1"
+  }
+}

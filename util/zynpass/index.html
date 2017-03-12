@@ -1,0 +1,31 @@
+<html>
+<head>
+	<title>zynos generator</title>
+</head>
+<body bgcolor="#FFFFFF">
+
+<form id="target" >
+
+Seed: <input type="text" id="seed" value="000000000000" maxlength="12"><br />
+Mac: <input type="text" id="mac" value="00" maxlength="2"><br />
+Magic: <input type="text" id="magic" value="000000000000" maxlength="12"><br />
+
+<input type="submit" id="Calculate" value="Calculate!" /><br />
+</form>
+
+
+<p>
+Output:
+</p>
+<p>
+Secret candidate #1 (just seed): <div id="output1"> </div> <br />
+Secret candidate #2 (seed + mac): <div id="output2"> </div> <br />
+Secret candidate #3 (custom magic): <div id="output3"> </div> <br />
+</p>
+
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="all.js"></script>
+
+</body>
+</html>
+

@@ -1,0 +1,21 @@
+{
+  "name": "zynpass-web-interface",
+  "version": "0.0.1",
+  "author": "Vlatko Kosturjak",
+  "description": "Simple Zynpass Web interface",
+  "devDependencies": {
+    "browserify": "latest",
+    "watchify": "latest"
+  },
+  "scripts": {
+    "build-js": "browserify zynos.js > all.js",
+    "watch-js": "watchify zynos.js -o all.js"
+  },
+  "dependencies": {
+    "zynpass": "latest"
+  },
+  "devDependencies": {
+    "browserify": "latest"
+  }
+}
+
