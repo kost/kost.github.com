@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Direct profit from vulnerabilities</title>
+
+		<meta name="description" content="Direct profit from vulnerabilities">
+		<meta name="author" content="VK">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/diverto.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+                        <div class="slides">
+                                <section>
+                                        <img src="images/diverto-logo.png" border="0">
+                                        <h1>!Profit!</h1>
+                                        <h3>Direct profit from vulnerabilities</h3>
+                                        <h3></h3>
+                                        <p>
+                                                <small>Vlatko Kosturjak (@k0st), FSEC Zagreb, 8th of September</small>
+                                        </p>
+                                </section>
+
+                                <section>
+                                        <h2>Agenda</h2>
+                                        <ul>
+						<li>Cryptocurrency ecosystem vulnerabilities and exploitation</li>
+                                                <li>Introduction to Ark</li>
+						<li>Ark delegate system</li>
+                                                <li>Ark delegate economic system</li>
+						<li>Vulnerability, exploitation and profit</li>
+						<li>Summary</li>
+						<li>Questions and answers</li>
+                                        </ul>
+                                        <p align="right">5 minutes</p>
+                                        <aside class="notes">
+                                                This is what we will cover in this presentation.
+                                        </aside>
+                                </section>
+
+				<section>
+					<h2>ARK anyone?</h2>
+					<img src="images/ark.png"><br />
+				</section>
+
+				<section>
+					<h2>ARK anyone?</h2>
+					<ul>
+					 	
+						<li>http://www.ark.io</li>
+						<li>yet another altcoin? </li>
+						<ul>
+							<li>8 second blocktime</li>
+							<li>DPoS consensus models</li>
+							<li>Cloneable blockhains</li>
+							<li>Smart bridge</li>
+
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>ARK delegate system</h2>
+					<ul>
+						
+						<li>Delegates</li>
+						<ul>
+							<li>DPoS core</li>
+							<li>Confirm transactions</li>
+							<li>Earn Arks</li>
+							<li>Walet addresses vote for them</li>
+							<li>Some of them share profit with voters</li>
+						</ul>
+						<li>Share profit with voters</li>
+						<ul>
+							<li>Payouts on regular basis</li>
+							<li>Basically, like stakings</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Ark Delegate Economic Model</h2>
+					<table>
+						<thead>
+							<tr>
+								<th></th>
+								<th>Vote/Unvote</th>
+								<th>New address</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td></td>
+								<td>Vote: 1 ARK</td>
+								<td>Create new address: 0 ARK</td>
+							<tr>
+							<tr>
+								<td></td>
+								<td>Unvote: 1 ARK</td>
+								<td>Transaction fee: 0.1 ARK</td>
+							<tr>
+							<tr>
+								<td></td>
+								<td></td>
+								<td>Vote: 1 ARK</td>
+							<tr>
+							<tr>
+								<td>TOTAL</td>
+								<td>2 ARK</td>
+								<td>1.1 ARK</td>
+							<tr>
+						</tbody>
+					</table>
+				</section>
+
+
+				<section>
+					<h2>What if?</h2>
+					<ul>
+						
+						<li>I create address for each delegate</li>
+						<li>Each address vote for different delegate</li>
+						<li>Move money to address just when it's time for payout</li>
+						<ul>
+							<li>Yes, profit!!!</li>
+						</ul>
+						<li>Disclaimer</li>
+						<ul>
+							<li>There are delegates which have fixed it</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Is it legal?</h2>
+					<ul>
+						
+						<li>Most common answer is</li>
+						<ul>
+							<li>I'm not lawyer</li>
+							<li>It Depends...</li>
+						</ul>
+						<li>Basically</li>
+						<ul>
+							<li>With smart contracts, code is legal text</li>
+							<li>If code allows, is it legal?</li>
+						</ul>
+						<li>In short</li>
+						<ul>
+							<li>Presenter is not responsible for your actions</li>
+							<li>You jumped - you killed yourself!</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Summary</h2>
+					<ul>
+						<li>Speeding up profits from delegate sharing model</li>
+						<li>Not vulnerability in cryptocurrency</li>
+						<ul>
+							<li>Except economic model of voting/unvoting</li>
+						</ul>
+						<li>It is vulnerability in delegate payment sharing mechanism</li>
+						<li>Legality</li>
+						<ul>
+							<li>Remember - it depends</li>
+							<li>You jumped - you killed yourself</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Credits/Thanks to</h2>
+					<ul>
+						<li>Ivica Ostojic</li>
+						<ul>
+							<li>Introduction to Ark coin</li>
+						</ul>
+						<li>Dorian Lacić</li>
+						<ul>
+							<li>Delegate findings</li>
+							<li>Delegate scheduling</li>
+						</ul>
+						<li>You - thanks for listening!</li>
+					</ul>
+				</section>
+
+
+		                 <section>
+                                        <h3>Thanks on listening</h3>
+                                        <h1>?</h1>
+                                        <h3>Any questions?</h3>
+                                </section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
