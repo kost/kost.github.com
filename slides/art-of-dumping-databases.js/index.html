@@ -351,7 +351,7 @@ sqlc --limit-rows 3 console
 
 limit and delay seconds between queries
 <pre><code data-trim contenteditable>	
-sqlc --limit-rows 10 --delay-between 5 console
+sqlc --limit-rows 10 --delay-between 5s console
 </code></pre>
 					</ul>
 				</section>
@@ -366,7 +366,7 @@ sqlc --min-rows 3 --max-rows 10 console
 
 limit and delay seconds between queries with jitter:
 <pre><code data-trim contenteditable>	
-sqlc --min-delay 10 --max-delay 60 --min-rows 3 --max-rows 10 console
+sqlc --min-delay 10s --max-delay 60s --min-rows 3 --max-rows 10 console
 </code></pre>
 					</ul>
 				</section>
