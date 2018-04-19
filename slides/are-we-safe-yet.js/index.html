@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Are we safe yet</title>
+
+		<meta name="description" content="Are we safe yet?">
+		<meta name="author" content="VK">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/diverto.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+                        <div class="slides">
+                                <section>
+                                        <img src="images/diverto-logo.png" border="0">
+                                        <h1>Are we safe yet?</h1>
+                                        <h3>So much security controls out there</h3>
+                                        <h3></h3>
+                                        <p>
+                                                <small>Vlatko Kosturjak (<a href="https://twitter.com/k0st">@k0st</a>), <a href="https://2018.dorscluc.org/">DORS/CLUC 2018, Zagreb, 20th of April, 2018</a></small>
+                                        </p>
+                                </section>
+
+                                <section>
+                                        <h2>Agenda</h2>
+                                        <ul>
+                                                <li>Introduction</li>
+						<li>Past security protections</li>
+                                                <li>New security protections</li>
+						<li>Recommendations</li>
+						<li>Summary</li>
+						<li>Questions and answers</li>
+                                        </ul>
+                                        <p align="right">15 minutes</p>
+                                        <aside class="notes">
+                                                This is what we will cover in this presentation.
+                                        </aside>
+                                </section>
+
+				<section>
+					<section>
+						<h2>About me</h2>
+						<ul>
+							<li>Security Consultant in Diverto</li>
+							<li>Open source (security) developer</li>
+							<ul>
+								<li>Authored own tools/projects</li>
+								<li>Contributed to many existing projects</li>
+								<li><a href="https://github.com/kost">https://github.com/kost</a></li>
+							</ul>
+							<li>DORS/CLUC and HULK</li>
+							<ul>
+								<li>was president of CLUG/HULK</li>
+								<li>was part of organizing comittee of DORS/CLUC</li>
+							</ul>
+						</ul>
+					</section>
+
+
+				</section>
+
+				<section>
+					<h2>Introduction</h2>
+					<ul>
+						<pre><code data-trim contenteditable>
+#include &lt;stdio.h&gt;
+
+int main (int argc, char *argv[]) {
+	char buffer[1024];
+	strcpy (buffer,argv[1]);
+	printf (buffer);
+}
+						</code></pre>
+						</ul>
+						<li>Any problem here?</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Security issues here</h2>
+					<ul>
+						<li>not checking size of buffer</li>
+						<pre><code data-trim contenteditable>
+	strcpy (buffer,argv[1]);
+						</code></pre>
+						<li>directly printing without specifying format</li>
+						<pre><code data-trim contenteditable>
+	printf (buffer);
+						</code></pre>
+						<li>not checking if argument is present</li>
+						<pre><code data-trim contenteditable>
+// TODO: Will add check later
+						</code></pre>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Why problematic?</h2>
+
+<ul>
+	</ul>
+	<li>Most dangerous: Remote Code Execution (RCE)</li>
+	</ul>
+	<pre><code data-trim contenteditable>
+$ gdb -q --args ./ex2 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+Reading symbols from ./ex2...(no debugging symbols found)...done.
+(gdb) r
+Starting program: /dc2018/ex2 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000414141414141 in ?? ()
+(gdb) i r
+rax            0x1e	30
+rdi            0x60202e	6299694
+rbp            0x4141414141414141	0x4141414141414141
+rsp            0x7fffffffdd70	0x7fffffffdd70
+[...]
+rip            0x414141414141	0x414141414141
+gs             0x0	0
+</code></pre>
+</section>
+
+
+				<section>
+					<h2>Kernel protections</h2>
+					<table>
+						<thead>
+							<tr>
+								<th>Feature</th>
+								<th>Controllable</th>
+								<th>Description</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>ASLR</td>
+								<td>randomize_va_space</td>
+								<td>Address space Randomization</td>
+							</tr>
+							<tr>
+								<td>NX</td>
+								<td></td>
+								<td>Not executable memory pages</td>
+							</tr>
+						</tbody>
+					</table>
+				</section>
+
+				<section>
+					<h2>Compiler flags</h2>
+					<table>
+						<thead>
+							<tr>
+								<th>Flag</th>
+								<th>Description</th>
+								<th>Prevention</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>-z noexecstack</td>
+								<td>Marks stack as non executable</td>
+								<td>executing shellcode on stack</td>
+							</tr>
+							<tr>
+								<td>-fstack-protector-all</td>
+								<td>Adds stack canaries</td>
+								<td>prevents function return overwritting</td>
+							</tr>
+							<tr>
+								<td>-D_FORTIFY_SOURCE=2</td>
+								<td>Add extra check to dang f()</td>
+								<td>prevents buffer overfows</td>
+							</tr>
+						</tbody>
+					</table>
+				</section>
+
+				<section>
+					<h2>Compiler flags 2</h2>
+					<table>
+						<thead>
+							<tr>
+								<th>Flag</th>
+								<th>Description</th>
+								<th>Prevention</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>-Wl,-z,relro</td>
+								<td>linker marks sections read only</td>
+								<td>prevents GOT overwrite attacks</td>
+							</tr>
+							<tr>
+								<td>-Wl,-z,now</td>
+								<td>all symbols are resolved at load time</td>
+								<td>prevents GOT overwrite attacks</td>
+							</tr>
+							<tr>
+								<td>fPIE -pie<br />-fPIC</td>
+								<td>generate position independent code/executable</td>
+								<td>randomize address space (ASLR)</td>
+							</tr>
+						</tbody>
+					</table>
+				</section>
+
+				<section>
+					<h2>Fixing at the source</h2>
+					<ul>
+						<pre><code data-trim contenteditable>
+#include &lt;stdio.h&gt;
+
+int main (int argc, char *argv[]) {
+	char buffer[10];
+	strncpy (buffer,argv[1], 10);
+	printf ("%s",buffer);
+}
+						</code></pre>
+						</ul>
+						<li>Fixed?</li>
+					</ul>
+				</section>
+
+
+				<section>
+					<h2>Summary</h2>
+					<ul>
+						<li>Take advantage of x86_64</li>
+						<ul>
+							<li>pass by register</li>
+							<li>NX</li>
+							<li>better ASLR</li>
+						</ul>
+						<li>Make sure it is x86_64</li>
+						<ul>
+							<li>distro/kernel/libs/bins</li>
+							<li>executable itself</li>
+						</ul>
+						<li>Use clang</li>
+						<ul>
+							<li>state of the art protections</li>
+							<li>use the security features/flags</li>
+							<li>gcc is lagging behind</li>
+						</ul>
+					</ul>
+				</section>
+
+
+		                 <section>
+                                        <h3>Thanks on listening</h3>
+                                        <h1>?</h1>
+                                        <h3>Any questions?</h3>
+					<h3><a href="https://twitter.com/k0st">@k0st</a></h3>
+                                </section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+				slideNumber: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
