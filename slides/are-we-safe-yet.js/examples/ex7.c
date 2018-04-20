@@ -11,6 +11,7 @@ typedef struct {
 int auth (char *username) {
 	printf("Authenticating %s...\n",username);
 	person tmp;
+	strcpy (tmp.password,"");
 	tmp.privilege = 'U';
 	strcpy (tmp.name,username);
 
