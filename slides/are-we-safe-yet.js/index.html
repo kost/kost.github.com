@@ -340,7 +340,7 @@ gs             0x0	0
 							<li>Initial support for CFI</li>
 							<li>Available in gcc 8.1</li>
 							<pre><code data-trim contenteditable>
--fsanitize=cfi -mcfe
+-fcf-protection=full -mcet
 							</code></pre>
 							<li>Few things BTW</li>
 							<ul>
@@ -358,7 +358,7 @@ gs             0x0	0
 							<li>Technology Preview, June 2017, rev 2.0</li>
 							<li>Hardware Assisted Control-flow technology</li>
 							<pre><code data-trim contenteditable>
--fsanitize=cfi
+-mcet
 							</code></pre>
 							<li>Compiler usually have to support it</li>
 							<li><a href="https://software.intel.com/sites/default/files/managed/4d/2a/control-flow-enforcement-technology-preview.pdf">control-flow-enforcement-technology-preview.pdf</a></li>
@@ -427,6 +427,48 @@ strcpy (tmp.name,username);
 
 				</section>
 	
+
+				<section>
+
+				<section>
+					<h2>So, how I should compile?</h2>
+					<ul>
+						<li>Something like this:</li>
+						<pre><code data-trim contenteditable>
+clang-3.9 ex7.c -Wl,-z,now -Wl,-z,relro -fpie -pie -fstack-protector-strong -D_FORTIFY_SOURCE=2 -O2 -fvisibility=hidden -flto -fsanitize=cfi -o ex7
+clang-3.9 ex7.c -Wl,-z,now -Wl,-z,relro -fpie -pie -fstack-protector-all -D_FORTIFY_SOURCE=2 -O2 -fvisibility=hidden -flto -fsanitize=cfi -o ex7
+						</code></pre>
+						</ul>
+					</ul>
+				</section>
+
+
+				<section>
+					<h2>How I can detect protections on binaries?</h2>
+					<ul>
+						<li>checksec</li>
+						<ul>
+							<li>https://github.com/slimm609/checksec.sh/</li>
+						</ul>
+						<li>No support for</li>
+						<ul>
+							<li>CFI</li>
+							<ul>
+								<li>nm [binary] | grep [cfi symbol]</li>
+							</ul>
+						</ul>
+						<pre><code data-trim contenteditable>
+$ nm ex7-prot | grep handle_cfi_check_fail 
+0000000000104a40 T __ubsan_handle_cfi_check_fail
+0000000000104a90 T __ubsan_handle_cfi_check_fail_abort
+$ nm ex7 | grep handle_cfi_check_fail  
+exit 1
+						</code></pre>
+					</ul>
+				</section>
+
+				</section>
+
 				<section>
 
 				<section>
@@ -467,31 +509,6 @@ int main (int argc, char *argv[]) {
 				</section>
 
 				</section>
-
-				<section>
-					<h2>How I can detect protections on binaries?</h2>
-					<ul>
-						<li>checksec</li>
-						<ul>
-							<li>https://github.com/slimm609/checksec.sh/</li>
-						</ul>
-						<li>No support for</li>
-						<ul>
-							<li>CFI</li>
-							<ul>
-								<li>nm [binary] | grep [cfi symbol]</li>
-							</ul>
-						</ul>
-						<pre><code data-trim contenteditable>
-$ nm ex7-prot | grep handle_cfi_check_fail 
-0000000000104a40 T __ubsan_handle_cfi_check_fail
-0000000000104a90 T __ubsan_handle_cfi_check_fail_abort
-$ nm ex7 | grep handle_cfi_check_fail  
-exit 1
-						</code></pre>
-					</ul>
-				</section>
-
 
 
 				<section>
