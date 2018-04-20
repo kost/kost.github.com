@@ -70,7 +70,7 @@
 					<section>
 						<h2>About me</h2>
 						<ul>
-							<li>Security Consultant in Diverto</li>
+							<li>CTO at Diverto</li>
 							<li>Open source (security) developer</li>
 							<ul>
 								<li>Authored own tools/projects</li>
@@ -87,6 +87,19 @@
 
 
 				</section>
+
+				<section>
+					<section>
+						<h2>Anything problematic?</h2>
+						<ul>
+						<img src="images/flight-security.jpg" border="0" />
+						</ul>
+					</section>
+
+
+				</section>
+
+				<section>
 
 				<section>
 					<h2>Introduction</h2>
@@ -151,6 +164,33 @@ gs             0x0	0
 
 
 				<section>
+					<h2>Security issues here</h2>
+					<ul>
+						<li>Most architectures affected</li>
+						<ul>
+							<li>Intel, ARM, MIPS, ...</li>
+						</ul>
+						<li>Scripting language is not affected?</li>
+						<ul>
+							<li>How do you parse XML, talk TLS, etc?</li>
+							<li>Bindings can be affected</li>
+							<li>libxml, OpenSSL, yourCustomLib...</li>
+						</ul>
+						<li>Exploitation</li>
+						<ul>
+							<li>Remote Code Execution (RCE)</li>
+							<li>Privilege Escalation</li>
+							<li>Data Modification</li>
+							<li>Information disclosure</li>
+						</ul>
+					</ul>
+				</section>
+
+				</section>
+
+				<section>
+
+				<section>
 					<h2>Kernel protections</h2>
 					<table>
 						<thead>
@@ -168,7 +208,7 @@ gs             0x0	0
 							</tr>
 							<tr>
 								<td>NX</td>
-								<td></td>
+								<td>noexec=on<br />noexec=off</td>
 								<td>Not executable memory pages</td>
 							</tr>
 						</tbody>
@@ -192,7 +232,7 @@ gs             0x0	0
 								<td>executing shellcode on stack</td>
 							</tr>
 							<tr>
-								<td>-fstack-protector-all</td>
+								<td>-fstack-protector-all<br />-fstack-protector-strong</td>
 								<td>Adds stack canaries</td>
 								<td>prevents function return overwritting</td>
 							</tr>
@@ -235,6 +275,160 @@ gs             0x0	0
 					</table>
 				</section>
 
+				</section>
+
+				<section>
+
+				<section>
+					<h2>Control flow integrity</h2>
+					<ul>
+						<li>Security control</li>
+						<ul>
+							<li>Exploitation mitigation technique</li>
+							<li>Preventing attacker to take control of flow</li>
+						</ul>
+						<li>Control flow Guard (CFG)</li>
+						<ul>
+							<li>Microsoft Implementation, 2014,Windows 8.1 update 3</li>
+							<li>Microsoft 10 Creator update, kernel compiled with CFG</li>
+						</ul>
+						<li>Have its vulns as well</li>
+						<ul>
+							<li>Overwritting CFI check itself, for example</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>grsec lovers?</h2>
+					<ul>
+						<li>Reuse Attack Protector (RAP)</li>
+						<ul>
+							<li>Hardened OS Linux Kernel, 2017</li>
+							<li>Control flow mitigation implementation</li>
+							<li>5.4% performance hit</li>
+						</ul>
+						<li>Reference</li>
+						<ul>
+							<li><a href="https://grsecurity.net/rap_announce_ret.php">https://grsecurity.net/rap_announce_ret.php</a></li>
+						</ul>
+					</ul>
+				</section>
+
+
+				<section>
+					<h2>Clang CFI</h2>
+					<ul>
+						<li>Control flow integrity</li>
+						<ul>
+							<li>Available in clang 3.9+</li>
+							<pre><code data-trim contenteditable>
+-fsanitize=cfi
+							</code></pre>
+							<li>Mostly helps in C++</li>
+							<li>No help against plain C function pointer</li>
+							<li><a href="https://clang.llvm.org/docs/ControlFlowIntegrity.html">https://clang.llvm.org/docs/ControlFlowIntegrity.html</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>GCC?</h2>
+					<ul>
+						<li>GCC 8.x</li>
+						<ul>
+							<li>Initial support for CFI</li>
+							<li>Available in gcc 8.1</li>
+							<pre><code data-trim contenteditable>
+-fsanitize=cfi -mcfe
+							</code></pre>
+							<li>Few things BTW</li>
+							<ul>
+								<li>You will need Intel processor which supports CFI</li>
+							</ul>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Intel?</h2>
+					<ul>
+						<li>Control-flow Enforcement(CFE)</li>
+						<ul>
+							<li>Technology Preview, June 2017, rev 2.0</li>
+							<li>Hardware Assisted Control-flow technology</li>
+							<pre><code data-trim contenteditable>
+-fsanitize=cfi
+							</code></pre>
+							<li>Compiler usually have to support it</li>
+							<li><a href="https://software.intel.com/sites/default/files/managed/4d/2a/control-flow-enforcement-technology-preview.pdf">control-flow-enforcement-technology-preview.pdf</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Few things BTW</h2>
+					<ul>
+						<li>GCC 8.1</li>
+						<ul>
+							<li>Intel landed patches</li>
+							<li>Not released yet</li>
+						</ul>
+						<li>Intel CFE</li>
+						<ul>
+							<li>Did not find any processor which supports CFE</li>
+							<li>AFAIK Intel did not release any CPU with CFE</li>
+							<ul>
+								<li>*Commercially available</li>
+							</ul>
+						</ul>
+						<li>TL;DR</li>
+						<ul>
+							<li>No production releases</li>
+							<li>Limited to Intel x86_64(AMD? ARM? MIPS?)</li>
+						</ul>
+					</ul>
+				</section>
+
+				</section>
+
+
+				<section>
+
+				<section>
+					<h2>So, no more buffer overflows?</h2>
+					<ul>
+						<pre><code data-trim contenteditable>
+typedef struct {
+	char	name[16];
+	char	password[18];
+	char	privilege;
+	char 	description[20];
+} person;
+
+person tmp;
+strcpy (tmp.name,username);
+
+						</code></pre>
+						</ul>
+						<li>Will all bells and whistles help?</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Only harder to exploit</h2>
+					<ul>
+						<li>It prevents most dangerous exploitation</li>
+						<li>Problem is still there</li>
+						<li>Only harder to exploit</li>
+
+					</ul>
+				</section>
+
+				</section>
+	
+				<section>
+
 				<section>
 					<h2>Fixing at the source</h2>
 					<ul>
@@ -253,7 +447,29 @@ int main (int argc, char *argv[]) {
 				</section>
 
 				<section>
-					<h2>How I can detect what binaries are</h2>
+					<h2>Asan?</h2>
+					<ul>
+						<li>Address Sanitizer detects</li>
+						<ul>
+							<li>use-after-free</li>
+							<li>buffer overflows</li>
+							<li>memory leaks</li>
+							<pre><code data-trim contenteditable>
+-fsanitize=address
+							</code></pre>
+							<li>Few things BTW</li>
+							<ul>
+								<li>x2 performance penalty</li>
+								<li>not production? testing/fuzzing</li>
+							</ul>
+						</ul>
+					</ul>
+				</section>
+
+				</section>
+
+				<section>
+					<h2>How I can detect protections on binaries?</h2>
 					<ul>
 						<li>checksec</li>
 						<ul>
@@ -262,7 +478,17 @@ int main (int argc, char *argv[]) {
 						<li>No support for</li>
 						<ul>
 							<li>CFI</li>
+							<ul>
+								<li>nm [binary] | grep [cfi symbol]</li>
+							</ul>
 						</ul>
+						<pre><code data-trim contenteditable>
+$ nm ex7-prot | grep handle_cfi_check_fail 
+0000000000104a40 T __ubsan_handle_cfi_check_fail
+0000000000104a90 T __ubsan_handle_cfi_check_fail_abort
+$ nm ex7 | grep handle_cfi_check_fail  
+exit 1
+						</code></pre>
 					</ul>
 				</section>
 

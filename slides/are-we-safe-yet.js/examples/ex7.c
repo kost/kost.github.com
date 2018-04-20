@@ -5,6 +5,7 @@ typedef struct {
 	char	name[16];
 	char	password[18];
 	char	privilege;
+	char 	description[20];
 } person;
 
 int auth (char *username) {
@@ -25,9 +26,11 @@ int auth (char *username) {
 	return(0);
 }
 
-void main (int argc, char *argv[]) {
+int main (int argc, char *argv[]) {
 	int ret;
 	ret=auth (argv[1]);
+
+	return(0);
 }
 
 
