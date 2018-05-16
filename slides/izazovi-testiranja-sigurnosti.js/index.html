@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Izazovi testiranja sigurnosti</title>
+
+		<meta name="description" content="Izazovi testiranja sigurnosti">
+		<meta name="author" content="VK">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/diverto.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+                        <div class="slides">
+                                <section>
+                                        <img src="images/diverto-logo.png" border="0">
+                                        <h1>Izazovi testiranja sigurnosti</h1>
+                                        <h3></h3>
+                                        <h3></h3>
+                                        <p>
+                                                <small>Vlatko Kosturjak (@k0st), Velika Gorica, 17.05.2018</small>
+                                        </p>
+                                </section>
+
+				<section>
+
+                                <section>
+                                        <h2>Agenda</h2>
+                                        <ul>
+                                                <li>Uvod</li>
+						<li>Definiranje predmeta testa</li>
+                                                <li>Definiranje opsega</li>
+						<li>Priprema</li>
+						<li>Testiranje</li>
+						<li>Nakon testiranja</li>
+						<li>Sažetak</li>
+						<li>Pitanja i odgovori</li>
+                                        </ul>
+                                        <p align="right">60 minuta</p>
+                                        <aside class="notes">
+                                                This is what we will cover in this presentation.
+                                        </aside>
+                                </section>
+
+				<section>
+						<h2>O autoru</h2>
+						<ul>
+							<li>CTO</li>
+							<ul>
+								<li>Prethodno</li>
+								<ul>
+									<li>Voditelj ofenzivnih usluga</li>
+								</ul>
+							</ul>
+							<li>Razvijatelj (sigurnosnih) alata otvorenog koda</li>
+							<ul>
+								<li>Izrada vlastitih</li>
+								<li>Doprinos popularnim: OpenVAS, Nmap, Metasploit, ...</li>
+								<li><a href="https://github.com/kost">https://github.com/kost</a></li>
+							</ul>
+							<li>Certifikati</li>
+							<ul>
+								<li>CISSP, CISA, CISM, CRISC, C|EH, ...</li>
+								<li>LPI-3, LPI-Security, ...</li>
+							</ul>
+						</ul>
+				</section>
+
+				<section>
+					<h2>Cilj prezentacije</h2>
+					<ul>
+						<li>Cilj prezentacije je</li>
+						<ul>
+							<li>Ima li smisla testirati?</li>
+							<li>Pomoć pri organizaciji testa</li>
+							<li>Kako izvući maksimum?</li>
+							<li>Kako se pripremiti?</li>
+							<li>Što napraviti nakon testa?</li>
+						</ul>
+						<li>Nećemo</li>
+						<ul>
+							<li>prolaziti tehnike i metodologije</li>
+							<li>kako pronaći i iskoristiti ranjivosti</li>
+						</ul>
+					</ul>
+				</section>
+				</section>
+
+				<section>
+					<h2>Razgovor</h2>
+					<ul>
+						<p class="fragment">što ako korisnik izmjeni podatke za drugog? </p>
+						<p class="fragment">to korisnik ne može napraviti...</p>
+						<p class="fragment">kako znate?</p>
+						<p class="fragment">pa nema te opcije</p>
+					</ul>
+				</section>
+
+				<section>
+					<section>
+						<h2>Nešto problematično?</h2>
+						<ul>
+						<img src="images/flight-security.jpg" border="0" />
+						</ul>
+					</section>
+				</section>
+
+				<section>
+
+				<section>
+				<h2>Izjava</h2>
+				<ul>
+					<blockquote>Aplikaciju smo penetracijski testirali i sigurna je</blockquote>
+				</ul>
+				</section>
+
+				<section>
+					<h2>Testirali?</h2>
+					<ul>
+					<img src="images/opensamm.png" border="0" />
+					</ul>
+				</section>
+
+				<section>
+					<h2>Cilj</h2>
+					<ul>
+						<li>Što želimo napraviti s testom?</li>
+						<ul>
+							<li>Regulatorna/Zakonska obveza</li>
+							<li>Sukladnost</li>
+							<li>Zadovoljiti sigurnosnu razinu</li>
+							<li>Znati ranjivosti sustava</li>
+						</ul>
+						<li>Nije baš</li>
+						<ul>
+							<li>da pokažemo kako smo dobri</li>
+							<li>da pokažemo kako je nešto sigurno</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Penetracijsko testiranje - siguran</h2>
+					<ul>
+
+<pre><code data-trim contenteditable>
+if ($day=="wednesday") {
+	system("nslookup "+$userinput);
+}
+</code></pre>
+<pre><code class="hljs" data-trim contenteditable>
+</code></pre>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Predmet testiranja</h2>
+					<ul>
+						<li>Predmet</li>
+						<ul>
+							<li>Infrastruktura</li>
+							<li>Aplikacije</li>
+							<li>Ljudi</li>
+							<li>Organizacija i procesi</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Iz natječaja...</h2>
+					<ul>
+						<blockquote>...Test ne smije imati utjecaja na produkciju...</blockquote>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Okruženje za testiranje</h2>
+					<ul>
+						<li>Predmet</li>
+						<ul>
+							<blockquote>...Test mora imati <b>minimalan utjecaj</b> na produkciju...</blockquote>
+						</ul>
+						<li>Okruženje</li>
+						<ul>
+							<li>Razvojno</li>
+							<li>Testno</li>
+							<li>Staging</li>
+							<li>Produkcija</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Opseg ranjivosti i dubina</h2>
+					<ul>
+						<li>Poznate ranjivosti</li>
+						<ul>
+							<li>Standardni protokoli</li>
+							<li>Standardni OS</li>
+							<li>Standardne aplikacije</li>
+						</ul>
+						<li>0-day</li>
+						<ul>
+							<li>Vlastiti protokoli</li>
+							<li>Vlastita aplikacija</li>
+							<li>Vlastiti proizvod</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Kada testirati?</h2>
+					<ul>
+						<blockquote>Ma znamo da je sve ranjivo...</blockquote>
+						<ul>
+							<li>Ima li potrebe testirati?</li>
+						</ul>
+					</ul>
+				</section>
+
+				</section>
+
+				<section>
+				<section>
+					<h2>Priprema za testiranje</h2>
+					<ul>
+						<li>Infrastruktura</li>
+						<ul>
+							<li>Osjetljivi sustavi</li>
+							<li>Propusnost sustava</li>
+							<li>Iskustva</li>
+							<ul>
+								<li>Port skeniranje </li>
+								<li>Skeniranja ranjivosti</li>
+								<li>Prethodni testovi</li>
+							</ul>
+							<li>Rezultat modeliranja prijetnji</li>
+							<li>Osiguravanje prostora na disku za logove</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Priprema za testiranje</h2>
+					<ul>
+						<li>Aplikacija</li>
+						<ul>
+							<li>Rezultat modeliranja prijetnji</li>
+							<li>Problematični dijelovi aplikacije</li>
+							<li>Korisnički računi za privilegije koje se testiraju</li>
+							<li>Sa svim mogućnostima koje pruža aplikacija</li>
+							<li>Osiguravanje prostora na disku za logove</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Testiranje - Ranjivosti</h2>
+					<ul>
+						<li>Infrastruktura</li>
+						<ul>
+							<li>Stare (ranjive) verzije</li>
+							<li>Inicijalno postavljeni kredencijali</li>
+							<li>Jednostavne lozinke</li>
+						</ul>
+						<li>Aplikacije</li>
+						<ul>
+							<li>XSS</li>
+							<li>Injection</li>
+							<li>Ranjiva Deserijalizacija</li>
+							<li>XXE</li>
+							<li>Zaobilaženje autorizacije</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+				<h2>Praksa</h2>
+				<ul>
+					<blockquote>jel može jedan test aplikacije u sljedećih 3 dana jer nam 4. dan ide u produkciju?</blockquote>
+				</ul>
+				</section>
+
+				</section>
+
+				<section>
+				<section>
+					<h2>Nakon testiranja - loša praksa</h2>
+					<ul>
+						<li>Panika!</li>
+						<li>Loši rezultati</li>
+						<ul>
+							<li>Ne komunicirati nikome - to je tajna!</li>
+							<li>Sakriti pod tepih, nije to tako strašno</li>
+						</ul>
+						<li>Dobri rezultati</li>
+						<ul>
+							<li>Hvaliti se kako je prošao test</li>
+							<li>Jedino mjerilo sigurnosti? :)</li>
+						</ul>
+						<li>Ostaviti sve kako je</li>
+						<ul>
+							<li>Tako radim već 10 godina...</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Nakon testiranja</h2>
+					<ul>
+						<li>Utvrditi lažno pozitivne</li>
+						<li>Prioritizirati ranjivosti</li>
+						<ul>
+							<li>Tester ne zna sve vaše poslovne rizike!</li>
+						</ul>
+						<li>Utvrditi IOC-ove</li>
+						<ul>
+							<li>Što je karakteristično za napad?</li>
+						</ul>
+						<li>Popraviti ranjivosti do definirane razine</li>
+						<ul>
+							<li>Ne moraju sve prijavljene ranjivosti biti popravljene</li>
+						</ul>
+						<li>Popraviti nadzor nad sustavima</li>
+						<ul>
+							<li>Što sam mogao detektirati, a nisam?</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Nakon testiranja - korak dalje</h2>
+					<ul>
+						<li>Iskoristiti rezultate</li>
+						<ul>
+							<li>Edukaciju korisnika</li>
+							<li>Edukacija osoblja</li>
+							<li>Dobivanje potpore</li>
+							<li>Dobivanje budžeta</li>
+						</ul>
+						<li>Poboljšati sustav</li>
+						<ul>
+							<li>Preventivni dio</li>
+							<li>Nadzorni dio</li>
+							<li>Organizacijski dio</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Sažetak dobrog plana</h2>
+					<ul>
+						<li>Definirati cilj testa</li>
+						<li>Predmet i opseg testiranja u skladu s ciljem</li>
+						<li>Pripremiti preduvjete testiranje</li>
+						<li>Nakon testiranja</li>
+						<ul>
+							<li>Utvrditi lažno pozitivne</li>
+							<li>Prioritizirati ranjivosti</li>
+							<li>Utvrditi IOC-ove</li>
+							<li>Popraviti ranjivosti do definirane razine</li>
+							<li>Popraviti nadzor nad sustavima</li>
+							<li>Budžet i edukacija</li>
+						</ul>
+					</ul>
+				</section>
+
+				</section>
+
+				<section>
+
+				<section>
+					<h2>Penetracijski test nema ranjivosti?</h2>
+					<ul>
+						<li>Problem opsega</li>
+						<ul>
+							<li>Testiranje podsustava</li>
+							<li>Testiranje pojedinačno</li>
+							<li>Testiranje samo aplikacije</li>
+						</ul>
+						<li>Nedostatak</li>
+						<ul>
+							<li>Kombiniranje ranjivosti</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Što dalje?</h2>
+					<ul>
+						<li>Red Teaming</li>
+						<ul>
+							<li>Tehnološki faktor</li>
+							<li>Organizacijski faktor</li>
+							<li>Ljudski faktor</li>
+						</ul>
+						<li>Vulnerability Bounty Program</li>
+						<ul>
+							<li>Nagrada za prijavljenu ranjivost</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Pentest nowadays</h2>
+					<ul>
+					<img src="images/tied.png" border="0" />
+					</ul>
+				</section>
+
+				<section>
+					<h2>Znači pentest više ne treba?</h2>
+					<ul>
+						<li>Baš i ne</li>
+						<ul>
+							<li>Preporuča se izvoditi sve</li>
+						</ul>
+						<li>Vulnerability Bounty Program</li>
+						<ul>
+							<li>Previše isplaćenih nagrada</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Usporedbe</h2>
+					<table>
+						<thead>
+							<tr>
+								<th>Tip</th>
+								<th>Pentest</th>
+								<th>Red Team</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Strategija</td>
+								<td>Pronaći što više ranjivosti</td>
+								<td>Iskoristiti ranjivosti za cilj</td>
+							</tr>
+							<tr>
+								<td>Dužina</td>
+								<td>1-3 tjedna</td>
+								<td>4 tjedna i više</td>
+							</tr>
+							<tr>
+								<td>Opseg</td>
+								<td>podsustav, aplikacija ili org.</td>
+								<td>Odjel, organizacija ili grupa</td>
+							</tr>
+						</tbody>
+					</table>
+				</section>
+
+				</section>
+
+
+				<section>
+					<h2>Sažetak</h2>
+					<ul>
+						<li>Definirati cilj testa</li>
+						<li>Predmet i opseg testiranja u skladu s ciljem</li>
+						<li>Pripremiti preduvjete testiranje</li>
+						<li>Penetracijski testovi</li>
+						<ul>
+							<li>Red teaming</li>
+							<li>Vulnerability Bounty</li>
+						</ul>
+					</ul>
+				</section>
+
+		                 <section>
+                                        <h3>Zahvaljujem na slušanju</h3>
+                                        <h1>?</h1>
+                                        <h3>Pitanja?</h3>
+					<h3><a href="https://twitter.com/k0st">@k0st</a></h3>
+					<small>&ltESC&gt</small>
+                                </section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+				slideNumber: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
