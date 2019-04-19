@@ -117,11 +117,9 @@
 							<li>PGP/GnuPG</li>
 						</ul>
 						<li>How about team collaboration tools?</li>
-						<li>Slack</li>
 						<ul>
-							<li>Your destiny is tied to their destiny :)</li>
-							<li><a href="https://nakedsecurity.sophos.com/2015/03/30/slack-gets-hacked-rolls-out-two-factor-authentication-after-user-database-breach/">Slack got hacked</a></li>
-							<li><a href="https://slack.com/security">https://slack.com/security</a></li>
+							<li>End to end encryption</li>
+							<li>Different channel</a></li>
 						</ul>
 					</ul>
 				</section>
@@ -181,24 +179,6 @@
 					</ul>
 				</section>
 
-				<section>
-					<h2>Git awareness</h2>
-					<ul>
-						<li>Commit author and e-mail can be impersonated</li>
-						<ul>
-							<li>You can change to be anyone</li>
-							<li>You still need credentials to push, but merge request is fun :)</li>
-							<li>git config --global user.name "HD Moore"</li>
-							<li>git config --global user.email hd_moore@rapid7.com</li>
-						</ul>
-						<li>Hooks</li>
-						<ul>
-							<li>do not blindly copy hooks from others :)</li>
-							<li>.git/hooks/post-checkout</li>
-							<li>.git/hooks/post-commit</li>
-						</ul>
-					</ul>
-				</section>
 
 				<section>
 					<h2>Simple automations</h2>
@@ -299,6 +279,98 @@
 						<ul>
 							<li><a href="https://securitytxt.org/">https://securitytxt.org/</a></li>
 						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Privilege Login Logging examples</h2>
+					<ul>
+					</ul>
+
+<pre><code data-trim contenteditable>
+$HOME/.bashrc
+
+</code></pre>
+<pre><code data-trim contenteditable>
+echo 'ALERT - Root Shell Access (Server Name) on:' `date` `who` | mail -s "Alert: Root Access from `who| cut -d"(" -f2 | cut -d")" -f1`" your@email.com
+
+</code></pre>
+<a href="https://networklessons.com/uncategorized/receive-e-mail-on-root-login">https://networklessons.com/uncategorized/receive-e-mail-on-root-login</a>
+				</section>
+
+				<section>
+					<h2>Bypass examples</h2>
+					<ul>
+						<blockquote>If a command is specified, it is executed on the remote host instead of a login shell. (ssh manual)</blockquote>
+
+<pre><code data-trim contenteditable>
+ssh user@host.domain rm .bashrc
+</code></pre>
+<pre><code data-trim contenteditable>
+chsh
+</code></pre>
+</ul>
+				</section>
+
+				<section>
+					<h2>Privilege Login Logging examples</h2>
+					<ul>
+						<li>PAM</li>
+						<li>pam_exec</li>
+						<pre><code data-trim contenteditable>
+session required pam_exec.so /etc/pam_scripts/login-notification.sh
+
+						</code></pre>
+
+<ul>
+<li><a href="https://www.vpsinfo.com/tutorial/email-alert-ssh-login/">https://www.vpsinfo.com/tutorial/email-alert-ssh-login/</a></li>
+</ul>
+
+</ul>
+				</section>
+
+				<section>
+					<h2>Privilege history logging</h2>
+					<ul>
+<pre><code data-trim contenteditable>
+chattr +a $HOME/.bash_history
+chattr +i $HOME/.bash_history
+</code></pre>
+<pre><code data-trim contenteditable>
+
+</code></pre>
+<a href="https://networklessons.com/uncategorized/receive-e-mail-on-root-login">https://networklessons.com/uncategorized/receive-e-mail-on-root-login</a>
+</ul>
+				</section>
+
+				<section>
+					<h2>Privilege Login Logging examples</h2>
+					<ul>
+						<li>Commands started with space are not logged by default</li>
+
+<pre><code data-trim contenteditable>
+unset HISTFILE
+unset HISTSIZE
+</code></pre>
+<pre><code data-trim contenteditable>
+chsh
+</code></pre>
+<li><a href="https://www.akyl.net/securing-bashhistory-file-make-sure-your-linux-system-users-won%E2%80%99t-hide-or-delete-their-bashhistory">https://www.akyl.net/securing-bashhistory-file-make-sure-your-linux-system-users-won%E2%80%99t-hide-or-delete-their-bashhistory</a></li>
+<li><a href="https://askubuntu.com/questions/820844/how-do-i-make-bash-history-undeleteable">https://askubuntu.com/questions/820844/how-do-i-make-bash-history-undeleteable</a></li>
+</ul>
+				</section>
+
+				<section>
+					<h2>Any additional software should I use?</h2>
+					<ul>
+						<li>auditd - comes with distribution</li>
+						<li>wazzuh - ex. ossec hids</li>
+						<li>acct - process accounting</li>
+						<li>osquery - facebook</li>
+						<li>debsums - if using Debian based</li>
+					</ul>
+					<ul>
+						<li>* selinux/apparamor comes preinstalled</li>
 					</ul>
 				</section>
 
