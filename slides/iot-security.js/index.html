@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>IoT Security</title>
+
+		<meta name="description" content="IoT Security">
+		<meta name="author" content="VK">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/diverto.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+                        <div class="slides">
+                                <section>
+                                        <img src="images/diverto-logo.png" border="0">
+                                        <h2>IoT Security</h2>
+                                        <h4>Users perspective</h4>
+					<h4></h4>
+                                        <p>
+                                                <small>Vlatko Kosturjak (<a href="https://twitter.com/k0st">@k0st</a>)</small>
+						<small><a href="https://www.diverto.hr/">Zagreb, 16th of May, 2019</a></small>
+                                        </p>
+                                </section>
+
+                                <section>
+                                        <h2>Agenda</h2>
+                                        <ul>
+                                                <li>Introduction</li>
+                                                <li>Internet of Things</li>
+                                                <li>Risks</li>
+                                                <li>Hardware communication</li>
+						<li>Accessory Development Kit (ADK)</li>
+						<li>Demos</li>
+						<li>Summary</li>
+						<li>Questions and answers</li>
+                                        </ul>
+                                        <p align="right">60 minutes</p>
+                                        <aside class="notes">
+                                                This is what we will cover in this presentation.
+                                        </aside>
+                                </section>
+
+				<section>
+					<section>
+						<h2>Kost: About me</h2>
+						<ul>
+							<li>Security Consultant in Diverto</li>
+							<ul>
+								<li>offensive/penetration tester</li>
+							</ul>
+							<li>Linux and FLOSS enthusiast</li>
+							<li>Open source developer</li>
+							<ul>
+								<li>Have code in OpenVAS, Nmap, Metasploit, ...</li>
+								<li><a href="https://github.com/kost">https://github.com/kost</a></li>
+							</ul>
+							<li>Implemented smart home</li>
+							<ul>
+								<li>home automation</li>
+								<li>market available components</li>
+							</ul>
+						</ul>
+					</section>
+
+					<section>
+						<h2>...in pictures</h2>
+						<!-- <div style="position: relative" > -->
+						   <img src="images/adk-workspace.jpg" /> <br />
+						   <!-- <img class="img-inline" style="position: absolute; top: 0; left: 0;" src="images/kindle-msf.jpg" /> -->
+						<!-- </div> -->
+						<aside class="notes">
+							Kindle, ADK, ...
+						</aside>
+					</section>
+				</section>
+
+				<section>
+
+				<section>
+					<img src="images/iot-picture.png" /> <br />
+					<aside class="notes">
+						<a href="https://www.iritech.com/blog/biometrics-to-bolster-security-of-iot-application/">Source of Image</a>.
+					</aside>
+				</section>
+
+				<section>
+					<h2>Internet of Things?</h2>
+					<ul>
+					     <blockquote>simply the point in time when more 'things or objects' were connected to the Internet than people</blockquote>
+					</ul>
+				</section>
+
+				<section>
+					<h2>IoT</h2>
+					<ul>
+					     <li>Internet of Things</li>
+					     <ul>
+						<li>"Internet for things"</li>
+						<li>MIT lab in 1999</li>
+					     </ul>
+					     <li>Research papers</li>
+					     <ul>
+						<li>2002 - Finland</li>
+					     </ul>
+					     <li>Cisco</li>
+					     <ul>
+						<li>things/people ratio = 0.08 in 2003</li>
+						<li>born" between 2008 and 2009</li>
+						<li>things/people ratio = 1.84 in 2010.</li>
+					     </ul>
+					</ul>
+				</section>
+
+				<section>
+					<img src="images/iot-trend.png" /> <br />
+					<aside class="notes">
+						<a href="https://medium.com/datadriveninvestor/6-internet-of-things-iot-security-technologies-on-the-contemporary-market-8b302d04d1d0">Source of Image</a>.
+					</aside>
+				</section>
+
+				<section>
+					<h2>IoT devices</h2>
+					<ul>
+					     <li>Consumer</li>
+					     <ul>
+						<li>Smart Home, Elder care, ...</li>
+					     </ul>
+					     <li>Commercial</li>
+					     <ul>
+						<li>Medical, Healthcare, Transportation, ...</li>
+					     </ul>
+					     <li>Industrial</li>
+					     <ul>
+						<li>Manufacturing, Agriculture, ...</li>
+					     </ul>
+					     <li>Infrastructure</li>
+					     <ul>
+						<li>Energy management, Environment monitoring, ...</li>
+					     </ul>
+					</ul>
+				</section>
+
+				</section>
+
+				<section>
+
+				<section>
+					<h2>What about risks?</h2>
+					<ul>
+					<li>Risks</li>
+					<ul>
+						<li>Resource hijaacking</li>
+						<li>Data Harvesting/Spying</li>
+						<li>Pivot Point</li>
+						<li>Decision on bad input</li>
+						<li>...</li>
+					</ul>
+					<li>Impact</li>
+					<ul>
+						<li>Internet not working</li>
+						<li>Higher Electricity bill</li>
+						<li>Access to your network</li>
+						<li>Safety issues</li>
+						<li>...</li>
+					</ul>
+					</ul>
+				</section>
+
+				<section>
+					<img src="images/iot-types.png" /> <br />
+					<aside class="notes">
+						<a href="https://iiot-world.com/reports/an-overview-of-the-iot-security-market-report-2017-2022/">Source of Image</a>.
+					</aside>
+				</section>
+
+				<section>
+					<h2>Mirai</h2>
+					<ul>
+						<li>2016</li>
+						<li>breached network routers/cameras</li>
+						<ul>
+						   <li>default passwords</li>
+						   <li>old Linux kernel</li>
+						</ul>
+						<li>DDoS</li>
+						<li>Etsy, GitHub, Netflix, Shopify, SoundCloud, Spotify, Twitter, ...</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Cold November in Finland</h2>
+					<ul>
+						<li>November 2016</li>
+						<li>heating in two buildings in Lappeenranta, Finland</li>
+						<ul>
+						   <li>no monitoring</li>
+						</ul>
+						<li>DDoS heating controllers to continually reboot the system</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Brickerbot</h2>
+					<ul>
+						<li>similar to mirai</li>
+						<li>bricking devices</li>
+						<ul>
+						   <li>overwriting flash memory</li>
+						   <li></li>
+						</ul>
+					</ul>
+				</section>
+
+				</section>
+
+				<section>
+
+				<section>
+					<img src="images/heatmiser.jpg" /> <br />
+				</section>
+
+				<section>
+					<h2>Thermostat - case study</h2>
+					<ul>
+					<li>Web interface</li>
+					<ul>
+						<li>Expose it to the internet</li>
+						<li>Let's set temperature when away</li>
+					</ul>
+					<li>Update - physical connection</li>
+					<ul>
+						<li>Hard to update</li>
+						<li>Most not patched</li>
+						<li>...</li>
+					</ul>
+					<li>References</li>
+					<ul>
+						<li><a href="https://cybergibbons.com/security-2/heatmiser-wifi-thermostat-vulnerabilities/">Vulns #1</a></li>
+						<li><a href="https://www.prodefence.org/shodan-and-iot-the-problem-is-here/">Shodan</a></li>
+					</ul>
+					</ul>
+				</section>
+
+				<section>
+					<img src="images/heatmiser-shodan.png" /> <br />
+				</section>
+
+				<section>
+					<img src="images/heatmiser-login.png" /> <br />
+				</section>
+
+				<section>
+					<img src="images/heatmiser-password.png" /> <br />
+				</section>
+
+				</section>
+
+
+				<section>
+
+				<section>
+					<h2>Communication</h2>
+					<ul>
+					<li>Internet</li>
+					<ul>
+						<li>Encryption</li>
+						<li>Authentication</li>
+					</ul>
+					<li>Wireless</li>
+					<ul>
+						<li>2.4 / 5 Ghz (Wireless)</li>
+						<li>Zigbee (2.4)</li>
+						<li>433 Mhz</li>
+						<li>800 Mhz</li>
+						<li>...</li>
+					</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>433 MHz data</h2>
+					<ul>
+<pre><code data-trim contenteditable>
+{"time" : "2019-03-22 06:50:34", "model" : "inFactory sensor", "id" : 67, "temperature_F" : 45.000, "humidity" : 54}
+{"time" : "2019-03-22 06:49:06", "model" : "Prologue sensor", "id" : 9, "rid" : 176, "channel" : 1, "battery" : "LOW", "button" : 0, "temperature_C" : 169.600, "humidity" : 183}
+{"time" : "2019-03-22 06:49:08", "model" : "AlectoV1 Rain Sensor", "id" : 5, "channel" : 0, "battery" : "OK", "rain_total" : 6.750, "mic" : "CHECKSUM"}
+{"time" : "2019-04-06 17:59:10", "model" : "AlectoV1 Wind Sensor", "id" : 164, "channel" : 1, "battery" : "OK", "wind_speed" : 0.000, "wind_gust" : 0.000, "wind_direction" : 225, "mic" : "CHECKSUM"}
+{"time" : "2019-03-22 06:49:21", "model" : "Springfield Temperature & Moisture", "sid" : 23, "channel" : 3, "battery" : "LOW", "transmit" : "MANUAL", "temperature_C" : -204.800, "moisture" : 0, "mic" : "CHECKSUM"}
+{"time" : "2019-03-22 16:04:21", "model" : "Akhan 100F14 remote keyless entry", "id" : 174745, "data" : "0x2 (Unlock)"}
+</code></pre>
+					</ul>
+
+				</section>
+
+				<section>
+					<h2>TPMS</h2>
+					<ul>
+<pre><code data-trim contenteditable>
+{"time" : "2019-05-01 03:27:17", "model" : "Toyota", "type" : "TPMS", "id" : "f2a2a90e", "status" : 128, "pressure_PSI" : 33.000, "temperature_C" : 12.000, "mic" : "CRC"}
+
+{"time" : "2019-05-10 17:45:45", "model" : "Ford", "type" : "TPMS", "id" : "001b29fe", "code" : "88481e", "mic" : "CHECKSUM"}
+{"time" : "2019-05-10 16:19:19", "model" : "Schrader", "type" : "TPMS", "flags" : "04", "id" : "099C654", "pressure_kPa" : 277.500, "temperature_C" : 25.000, "mic" : "CRC"}
+{"time" : "2019-05-10 17:43:18", "model" : "Renault", "type" : "TPMS", "id" : "b72eba", "flags" : "36", "pressure_kPa" : 186.750, "temperature_C" : 21.000, "mic" : "CRC"}
+{"time" : "2019-03-22 08:58:14", "model" : "Schrader Electronics EG53MA4", "type" : "TPMS", "flags" : "4d930020", "id" : "046433", "pressure_bar" : 2.275, "temperature_F" : 70.000, "mic" : "CHECKSUM"}
+{"time" : "2019-04-21 02:10:43", "model" : "Citroen", "type" : "TPMS", "state" : "c2", "id" : "0f39e17e", "flags" : 12, "repeat" : 2, "pressure_kPa" : 280.984, "temper
+ature_C" : 22.000, "maybe_battery" : 14, "mic" : "CHECKSUM"}
+</code></pre>
+
+					</ul>
+
+				</section>
+
+				<section>
+					<h2>RTL SDR</h2>
+					<img src="images/iot-tv.png" /> <br />
+				</section>
+
+				<section>
+					<img src="images/adsb.jpeg" /> <br />
+					<aside class="notes">
+						<a href="https://i.ytimg.com/vi/hT0ugz9nU00/maxresdefault.jpg">Source of Image</a>.
+					</aside>
+				</section>
+
+				</section>
+
+				<section>
+				<section>
+					<h2>Wireless</h2>
+					<ul>
+						<li>Frequency</li>
+						<ul>
+						   <li>2.4 Ghz</li>
+						   <li>5 Ghz</li>
+						</ul>
+						<li>Standard wireless thing</li>
+						<ul>
+						   <li>Access Point</li>
+						   <li>STA / clients</li>
+						   <li>ad hoc*</li>
+						   <li>mesh*</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Useful wireless tools for reversing</h2>
+					<ul>
+					     <li>Obtaining</li>
+					     <ul>
+						<li>Kismet</li>
+						<li>Aircrack-ng suite</li>
+						<li>tcpdump on device</li>
+					     </ul>
+					     <li>Analysing</li>
+					     <ul>
+						<li>wireshark</li>
+						<li>tshark</li>
+						<li>moloch (heavy duty!)</li>
+						<li>pcap bindings for your favourite language</li>
+						<li>good hex editor and calculator</li>
+					     </ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Daugther was crazy about RC cars</h2>
+					<img src="images/hw-spyghost.jpg" /> <br />
+				</section>
+
+				<section>
+					<h2>Hmm. Let's see what is inside</h2>
+					<img src="images/hw-sp-inside-1.jpg" /> <br />
+				</section>
+
+				<section>
+					<h2>It's daddy toy</h2>
+					<img src="images/hw-sp-inside-2.jpg" /> <br />
+				</section>
+
+				<section>
+					<h2>How it works?</h2>
+					<ul>
+						<li>Car is actually Wireless Access Point</li>
+						<li>Open wireless network with specific SSID</li>
+						<li>Mobile client connects to the wireless network</li>
+						<ul>
+							<li>Typical TCP/IP</li>
+							<li>different TCP ports for different functions</li>
+						</ul>
+						<li>Does it blend?</li>
+						<ul>
+							<li>Haven't tried :)</li>
+						</ul>
+					</ul>
+				</section>
+
+
+				<section>
+					<h2>Open wireless camera</h2>
+					<img src="images/sg-webcamera.jpg" /> <br />
+				</section>
+
+				<section>
+					<h2>Security/Privacy considerations</h2>
+					<ul>
+						<li>Open Wireless Access Point</li>
+						<li>No protection on network/application level</li>
+						<ul>
+							<li>No password</li>
+							<li>No encryption</li>
+							<li>No authentication</li>
+						</ul>
+						<li><i>We're in era where toys can spy on us</i></li>
+						<ul>
+							<li>Get into business with camera covers for toys!</li>
+						</ul>
+					</ul>
+				</section>
+
+				</section>
+
+				<section>
+				<section>
+					<h2>Basic hardware kit needed</h2>
+					<img src="images/ivoras-hardware.jpg" /> <br />
+				</section>
+
+				<section>
+					<h2>Links on AliExpress/Bangood</h2>
+					<ul>
+						<li>Laziness - thanks <a href="https://twitter.com/ivoras">Ivan Voras</a></li>
+					   <ul>
+						<li>Soldering: http://goo.gl/ePG7Ni</li>
+						<li>Voltmeter: http://goo.gl/J57z7N</li>
+						<li>Osciloscope: http://goo.gl/HKuCbP</li>
+						<li>Logic probe: http://goo.gl/rbWxJS</li>
+						<li>Power source: http://goo.gl/76dPqO</li>
+						<li>Arduinos: http://goo.gl/63pTE2</li>
+					   </ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Useful hardware devices</h2>
+					<ul>
+					     <li>Beside that - recommended</li>
+					     <ul>
+						<li>BusPirate</li>
+						<li>TTL serial cable</li>
+					     </ul>
+					     <li>Actually you don't need TTL </li>
+					     <ul>
+						<li>if you have BusPirate</li>
+					     </ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Bus Pirate</h2>
+					<img src="images/hw-buspirate.jpg" /> <br />
+				</section>
+
+				<section>
+					<h2>Logic Analyzer</h2>
+					<img src="images/hw-logic.jpg" /> <br />
+				</section>
+
+				</section>
+
+				<section>
+				<section>
+					<h2>Multimeter</h2>
+					<img src="images/hw-multimeter.jpg" /> <br />
+				</section>
+
+				<section>
+					<h2>Multimeter communication analysis</h2>
+					<ul>
+						<li>Multimeter have serial communication</li>
+						<li>Basic serial communication reversing</li>
+						<ul>
+							<li>Looking at the product specification</li>
+							<li>Looking at the similar products specs</li>
+							<li>If not, basic baud rate "brute" guessing</li>
+							<li>as well as other parameters (stop bit, etc)</li>
+						</ul>
+						<li>Getting as much communication as possible</li>
+						<ul>
+							<li>how it looks like in different states</li>
+							<li>find patterns and differences</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Security considerations</h2>
+					<ul>
+						<li>Again, it's quite open</li>
+						<ul>
+							<li>No password</li>
+							<li>No encryption</li>
+							<li>No authentication</li>
+						</ul>
+						<li>But this time</li>
+						<ul>
+							<li>it's not wireless, only wired serial</li>
+						</ul>
+						<li><i>Know your threat model!</i></li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Multimeter communication</h2>
+					<ul>
+						<li>Only receive serial communication</li>
+						<li>Serial communication</li>
+						<ul>
+							<li>2400 bps</li>
+							<li>8 bits</li>
+							<li>1 stop bit</li>
+							<li>No Parity</li>
+						</ul>
+						<li>Packet pattern</li>
+						<ul>
+							<li>14 byte packets with 0D0A on the end</li>
+							<li>First few bytes - the value, other bit flags</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Multimeter Android App</h2>
+					<ul>
+						<li>What if I can get readings on Android</li>
+						<li>Features</li>
+						<ul>
+							<li>get nice graph (1 channel logic analyzer)</li>
+							<li>export values to CSV</li>
+							<li>take picture with camera on spike (with OSD)</li>
+							<li>write values in EXIF and OSD</li>
+						</ul>
+						<li>Proof of concept</li>
+						<ul>
+							<li>Android App using mik3y serial library</li>
+							<li>Drawing graphs using Android Plot</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Multimeter App PoC</h2>
+					<img src="images/droidmeter.jpg" /> <br />
+				</section>
+
+				</section>
+
+
+				<section>
+
+				<section>
+					<img src="images/iot-security-vendor.jpg" /> <br />
+					<aside class="notes">
+						<a href="">Source of Image</a>.
+					</aside>
+				</section>
+
+				<section>
+					<h2>Recommendations</h2>
+					<ul>
+						<li>Do not directly expose on Internet</li>
+						<ul>
+							<li>high port</li>
+							<li>VPN/SSL</li>
+						</ul>
+						<li>Network isolation</li>
+						<li>Auto update</li>
+						<li>Change password to stronger</li>
+						<li>Double think about automation source</li>
+						<ul>
+							<li>relying on multiple sources</li>
+						</ul>
+						<li>Secure disposal</li>
+						<ul>
+							<li>credentials in device</li>
+						</ul>
+					</ul>
+				</section>
+
+				</section>
+
+
+				<section>
+					<h2>Summary</h2>
+					<ul>
+						<li>IoT will not disappear</li>
+						<li>Risks</li>
+						<ul>
+							<li>Resource hijaacking</li>
+							<li>Data Harvesting/Spying</li>
+							<li>Pivot Point</li>
+						</ul>
+						<li>Recommendations</li>
+						<ul>
+							<li>narrowing attack surface</li>
+							<li>configuration hardening</li>
+						</ul>
+					</ul>
+				</section>
+
+
+		                 <section>
+                                        <h3>Thanks on listening</h3>
+                                        <h1>?</h1>
+                                        <h3>Any questions?</h3>
+                                </section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
