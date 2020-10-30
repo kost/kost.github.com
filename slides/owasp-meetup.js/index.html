@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<img src="images/owasp_logo.png" style="background:none; border:none; box-shadow:none;">
+					<h2>OWASP Croatia</h2>
+					<h4>Meetup group</h4>
+					<h4>Chapter Croatia Public Service Announcements</h4>
+					<p>
+						<small>Tonimir Kišasondi (<a href="https://twitter.com/kisasondi">@kisasondi</a>)</small>
+						<small>Igor Vuk (<a href="https://twitter.com/0x6976">@0x6976</a>)</small>
+						<small>Vlatko Košturjak (<a href="https://twitter.com/k0st">@k0st</a>)</small>
+						<small><a href="https://www.owasp.org/index.php/Croatia">OWASP Croatia meetup, 30th of October, 2020</a></small>
+					</p>
+				</section>
+
+				<section>
+					<h2>Places to remember</h2>
+					<ul>
+						<li>OWASP Croatia Meetup Group</li>
+						<ul>
+							<li><a href="https://www.meetup.com/OWASP-Croatia-Meetup-Group">https://www.meetup.com/OWASP-Croatia-Meetup-Group</a></li>
+						</ul>
+						<li>OWASP Croatia Slack</li>
+						<ul>
+							<li>#chapter-croatia</li>
+							<li><a href="https://owasp.slack.com/archives/C0126FNBZ19">https://owasp.slack.com/archives/C0126FNBZ19</a></li>
+						</ul>
+						<li>OWASP Croatia Web</li>
+						<ul>
+							<li><a href="https://owasp.org/www-chapter-croatia/">https://owasp.org/www-chapter-croatia/</a></li>
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Agenda</h2>
+					<ul>
+						<li>18:00 - 18:15 - Chapter Croatia Public Service Announcements</li>
+						<li>18:15 - 19:00 - Dubravko Sever - DefectDojo, vidljivost ranjivosti na jednom mjestu</li>
+						<li>19:15 - 20:00 - Grayson Hardaway- Enforcing Code &amp; Security Standards with Semgrep</li>
+						<li>20:00 - EOW - Virtual drinks and chitchat</li>
+					</ul>
+				</section>
+
+				<section>
+				       <h3>Hvala na vremenu</h3>
+				       <h1>?</h1>
+				       <h3>Pitanja?</h3>
+			       </section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
